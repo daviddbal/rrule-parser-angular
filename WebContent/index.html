@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html ng-app="rruleApp">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>RRULE Parser</title>
+	<meta name="description" content="Recurrencd Rule (RRULE) parser based in iCalendar RFC 5545 specification">
+	<meta name="keywords" content="rrule, icalendar, RFC 5545, recurrence rule, icalendarfx, java, jfxtras">
+	<meta name="author" content="David Bal">
+	<link rel="stylesheet" type="text/css" href="css/rrule.css"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-route.js"></script>
+	<script type="text/javascript" src="js/Controller.js"></script>
+</head>
+
+<body ng-controller="MainController">
+{{ recurrences }}
+
+	<table id="resultTable">
+		<thead>
+			<tr>
+				<th>Date/time</th>
+			</tr>
+		</thead>
+		<tbody id="resultTableBody">
+			<tr ng-repeat="recurrence in recurrences">
+				<td>{{ recurrence }}</td>
+			</tr>
+		</tbody>	
+	</table>
+
+	<div id="builderControl">
+		Repeat Frequency:
+		<select required id="freq" onchange="buildRRule()">
+			<optgroup label="Day based">
+				<option value="DAILY">Daily</option>
+				<option value="WEEKLY">Weekly</option>
+				<option value="MONTHLY">Monthly</option>
+				<option value="YEARLY">Yearly</option>
+			</optgroup>
+			<optgroup label="Day fraction based">
+				<option value="SECONDLY">Secondly</option>
+				<option value="MINUTELY">Minutely</option>
+				<option value="HOURLY">Hourly</option>
+			</optgroup>
+		</select>
+		<br>
+		Repeats every<input type="number" id="interval" onchange="buildRRule()" min="1" max="1000" value="1"><span id='intervalType'></span><br>
+		<span id='dayOfWeek' class="options">
+			<input type="checkbox" id="sundayCheckbox" onchange="buildRRule()" value="SUNDAY">Sun
+	  		<input type="checkbox" id="mondayCheckbox" onchange="buildRRule()" value="MONDAY" >Mon
+			<input type="checkbox" id="tuesdayCheckbox" onchange="buildRRule()" value="TUESDAY">Tue
+	  		<input type="checkbox" id="wednesdayCheckbox" onchange="buildRRule()" value="WEDNESDAY" >Wed
+			<input type="checkbox" id="thursdayCheckbox" onchange="buildRRule()" value="THURSDAY">Thu
+	  		<input type="checkbox" id="fridayCheckbox" onchange="buildRRule()" value="FRIDAY" >Fri
+	  		<input type="checkbox" id="saturdayCheckbox" onchange="buildRRule()" value="SATURDAY" >Sat<br>
+  		</span>
+  
+		<span id='monthlyOptions' class="options">
+			<input type="radio" id="dayOfMonthCheckBox" name="monthlyRadioButtons" onchange="buildRRule()" value="DAY_OF_MONTH" checked>Day of month
+	  		<input type="radio" id="dayOfWeekCheckBox" name="monthlyRadioButtons" onchange="buildRRule()" value="DAY_OF_WEEK" >Day of week<br>
+  		</span>
+  		
+		Start date<input type="date" id="dateStart" onchange="buildDTStart()">
+		Start time<input type="time" id="timeStart" step="1" onchange="buildDTStart()"><br>
+		
+		Ends:
+		<input type="radio" id="neverCheckBox" name="endRadioButtons" onchange="buildRRule()" checked>Never
+  		<input type="radio" id="afterCheckBox" name="endRadioButtons" onchange="buildRRule()" >After
+  		<input type="radio" id="onCheckBox" name="endRadioButtons" onchange="buildRRule()">On<br>
+  		<span id="countSpan" class="options">
+  			<input type="number" id="count" onchange="buildRRule()" min="1" max="1000" value="10">
+  			<span id='countType'></span><br>
+  		</span>
+  		<span id="untilSpan" class="options" style="display:false">
+  			End date<input type="date" id="until" onchange="buildRRule()"><br>
+  		</span>
+	</div>
+
+ 	<form id="rruleForm" action="RRuleServlet" method="get">
+		<div id="rrule">
+			RRULE <input type="text" size="53" id="rruleContent" name="rrule" ng-model="rruleContent" ><br>
+			DTSTART <input type="text" size="50" id="dtstartContent" name="dtstart" value="DTSTART:20170101T120000" ><br>
+			Max Recurrences Displayed<input type="number" id="maxRecurrences" name="maxRecurrences" min="1" max="1000" value="50"><br>
+			<button id="submitButton">Submit</button>
+		</div>
+	</form>
+
+	</div>
+</body>
+</html>
