@@ -14,6 +14,7 @@ rruleApp.controller('RRuleController', function($scope)
 {
 	// NOW
 	var date = new Date();
+	date.setSeconds(0,0);
 	
 	// FREQUENCY
 	frequencyOptions = {
@@ -45,6 +46,15 @@ rruleApp.controller('RRuleController', function($scope)
 	$scope.monthlyOption = $scope.monthlyOptions.DAY_OF_MONTH;
 	$scope.monthlyDisplayStyle = {'display' : 'none'};
 	
+	// END OPTIONS
+	$scope.endOptions = {
+			NEVER : 1,
+			AFTER : 2,
+			ON : 3
+			};
+	$scope.endOption = $scope.endOptions.NEVER;
+	$scope.monthlyDisplayStyle = {'display' : 'none'};	
+	
 	// START DATE
 	$scope.date = date;
 	$scope.time = date;
@@ -52,13 +62,16 @@ rruleApp.controller('RRuleController', function($scope)
 	// Make RRULE Content
     $scope.makeRRule = function()
     {
-    	console.log("monthly:" + $scope.monthlyOption + " " + monthlyOptions.DAY_OF_MONTH);
+    	// FREQ
     	var rrule = "RRULE:FREQ=" + $scope.frequency;
+    	
+    	// INTERVAL
     	if ($scope.interval > 1)
 		{
     		rrule += ";INTERVAL=" + $scope.interval;
 		}
     	
+    	// WEEKLY OPTIONS
     	if ($scope.frequency === "WEEKLY")
 		{
     		$scope.weeklyDisplayStyle = {'display' : 'inline'};
@@ -76,51 +89,63 @@ rruleApp.controller('RRuleController', function($scope)
     		$scope.weeklyDisplayStyle = {'display' : 'none'};
 		}
     	
+    	// MONTHLY OPTIONS
     	if ($scope.frequency === "MONTHLY")
 		{
-///    		$scope.monthlyDisplayStyle = {'display' : 'inline'};
-//	    	var dateString = document.getElementById('dateStart').value;
-//	    	var timeString = document.getElementById('timeStart').value;
-//	    	var date = makeDateTime(dateString, timeString)
+    		$scope.monthlyDisplayStyle = {'display' : 'inline'};
     		if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_MONTH)
 			{
     			rrule += ";BYMONTHDAY=" + $scope.date.getDate();
 			} else if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_WEEK)
 			{
-				
+	    		var ordinal = weekOrdinalInMonth($scope.date);
+	    		var day = daysOfWeekDisplay[$scope.date.getDay()];
+				rrule += ";BYDAY=" + ordinal + day.substring(0,2).toUpperCase();
 			}
-//    	        document.getElementById('monthlyOptions').style.display = "inline";
-//    	    	
-//    	    	var isDayOfMonthChecked = document.getElementById('dayOfMonthCheckBox').checked;
-//    	    	var isDayOfWeekChecked = document.getElementById('dayOfWeekCheckBox').checked;
-//    	    	var dateString = document.getElementById('dateStart').value;
-//    	    	var timeString = document.getElementById('timeStart').value;
-//    	    	var date = makeDateTime(dateString, timeString)
-//    	    	var days = ['SU','MO','TU','WE','TH','FR','SA'];
-//    	    	var dayOfWeek = days[date.getDay()];
-//
-//    	   	 	if (!isDayOfMonthChecked && !isDayOfWeekChecked)
-//    			{
-//    	        	document.getElementById('dayOfMonthCheckBox').checked = true;
-//    	        	dom = true;
-//    			}
-//    	    	if (isDayOfWeekChecked)
-//    			{
-//    	    		var ordinal = weekOrdinalInMonth(date);
-//    				rrule += ";BYDAY=" + ordinal + dayOfWeek;
-//    			} else if (isDayOfMonthChecked)
-//    			{
-//    				rrule += ";BYMONTHDAY=" + date.getDate();
-//    			}
-//    		} else
-//    		{
-//    	    	document.getElementById('monthlyOptions').style.display = "none";
-//    		}
-//    		rrule += ";INTERVAL=" + $scope.monthlyOption;
 		} else
 		{
 			$scope.monthlyDisplayStyle = {'display' : 'none'};
 		}
+    	
+        /*
+         * END criteria
+         */
+    	var isAfterChecked = document.getElementById('afterCheckBox').checked;
+    	var isOnChecked = document.getElementById('onCheckBox').checked;
+    	if (isAfterChecked)
+    	{
+    		document.getElementById('countSpan').style.display = "inline";
+    		document.getElementById('untilSpan').style.display = "none";
+    		// Set COUNT
+    		var count = document.getElementById('count').value;
+    		var afterType = (count > 1) ? "events" : "event";
+    		document.getElementById('countType').innerHTML = afterType;
+    		rrule += ";COUNT=" + count;
+    	} else if (isOnChecked)
+    	{
+    		document.getElementById('untilSpan').style.display = "inline";	
+    		document.getElementById('countSpan').style.display = "none";
+    		var untilDateString = document.getElementById('until').value;
+    		var timeString = document.getElementById('timeStart').value;
+    		var timeZone = new Date().toString().substring(24);
+    		var offset = new Date().getTimezoneOffset();
+    		var untilDate = new Date(untilDateString + "T" + timeString);
+    		untilDate.setTime(untilDate.getTime() + untilDate.getTimezoneOffset()*60*1000); // time zone offset adjustment
+    		var timestamp = Date.parse(untilDate);
+    		if (! isNaN(timestamp))
+    		{
+    			var untilDateString = untilDate.toISOString();
+    			untilDateString = untilDateString.replace(/-/g, ""); // remove dashes
+    			untilDateString = untilDateString.replace(/:/g, ""); // remove colons
+    			untilDateString = untilDateString.substring(0, untilDateString.indexOf(".")) + "Z"; // remove fraction of second
+    			rrule += ";UNTIL=" + untilDateString;
+    		}
+    	} else
+    	{ // Never end checkbox
+    		document.getElementById('countSpan').style.display = "none";
+    		document.getElementById('untilSpan').style.display = "none";
+    	}
+    	
     	return rrule;
     }
 	// 	TODO - HANDLE BINDING FOR RRULE WITH CONTROLS
@@ -169,16 +194,17 @@ rruleApp.factory('rruleParser', function($http){
     };
   });
 
-/*
- * Build a date string
- * MAY BE OBSOLETE - NEED TO TEST TIME ZONE WITH ANGULAR BINDING
- */
-function buildDateString(date, delimiter)
+
+function weekOrdinalInMonth(date)
 {
-    var yearString = date.toLocaleDateString('default', {year: 'numeric'});
-    var monthString = date.toLocaleDateString('default', {month: 'numeric'});
-    monthString = ("0" + monthString).slice(-2); // make 2-digits
-    var dayString = date.toLocaleDateString('default', {day: 'numeric'});
-    dayString = ("0" + dayString).slice(-2); // make 2-digits
-    return yearString + delimiter + monthString + delimiter + dayString;
+    var firstDayInMonth = new Date(date)
+    firstDayInMonth.setDate(1);
+    var testDate = firstDayInMonth;
+    var ordinalWeekNumber = 0;
+    while (testDate < date)
+    {
+        ordinalWeekNumber++;
+        testDate.setDate(testDate.getDate()+7); // add one week
+    }
+    return ordinalWeekNumber;
 }
