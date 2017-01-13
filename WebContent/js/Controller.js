@@ -12,23 +12,47 @@ var rruleApp = angular.module('rruleApp', ['ngRoute']);
 
 rruleApp.controller('RRuleController', function($scope)
 {
+	// NOW
+	var date = new Date();
+	
+	// FREQUENCY
+	frequencyOptions = {
+			DAILY : 1,
+			WEEKLY : 2,
+			MONTHLY : 3,
+			YEARLY : 4,
+			SECONDLY : 5,
+			MINUTELY : 6,
+			HOURLY : 7
+	};
 	$scope.frequency = "DAILY";
+	
+	// INTERVAL
 	$scope.interval = 1;
 
-	$scope.weeklyDisplayStyle = {'display' : 'none'};
+	// WEEKLY OPTIONS
+	weeklyDisplayStyle = {'display' : 'none'};
 	$scope.daysOfWeek = [ false, false, false, false, false, false, false ];
-//	$scope.daysOfWeek = ['SU','MO','TU','WE','TH','FR','SA'];
-	$scope.daysOfWeekDisplay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-	var day = new Date().getDay();
+	daysOfWeekDisplay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+	var day = date.getDay();
 	$scope.daysOfWeek[day] = true;
 
-	$scope.monthlyOptions = [ "DAY_OF_MONTH", "DAY_OF_WEEK" ];
-	$scope.monthlyOption = $scope.monthlyOptions[0];
+	// MONTHLY OPTIONS
+	$scope.monthlyOptions = {
+			DAY_OF_MONTH : 1,
+			DAY_OF_WEEK : 2
+			};
+	$scope.monthlyOption = $scope.monthlyOptions.DAY_OF_MONTH;
 	$scope.monthlyDisplayStyle = {'display' : 'none'};
+	
+	// START DATE
+	$scope.date = date;
+	$scope.time = date;
 
 	// Make RRULE Content
     $scope.makeRRule = function()
     {
+    	console.log("monthly:" + $scope.monthlyOption + " " + monthlyOptions.DAY_OF_MONTH);
     	var rrule = "RRULE:FREQ=" + $scope.frequency;
     	if ($scope.interval > 1)
 		{
@@ -54,7 +78,17 @@ rruleApp.controller('RRuleController', function($scope)
     	
     	if ($scope.frequency === "MONTHLY")
 		{
-    		$scope.monthlyDisplayStyle = {'display' : 'inline'};
+///    		$scope.monthlyDisplayStyle = {'display' : 'inline'};
+//	    	var dateString = document.getElementById('dateStart').value;
+//	    	var timeString = document.getElementById('timeStart').value;
+//	    	var date = makeDateTime(dateString, timeString)
+    		if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_MONTH)
+			{
+    			rrule += ";BYMONTHDAY=" + $scope.date.getDate();
+			} else if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_WEEK)
+			{
+				
+			}
 //    	        document.getElementById('monthlyOptions').style.display = "inline";
 //    	    	
 //    	    	var isDayOfMonthChecked = document.getElementById('dayOfMonthCheckBox').checked;
@@ -135,27 +169,16 @@ rruleApp.factory('rruleParser', function($http){
     };
   });
 
-//var controllers = {};
-
-//// Controller for main page with controls for setting RRule
-//controllers.MainController = function($scope, rruleParser)
-//{
-//	$scope.recurrences = [1,2,3];
-//	// 	TODO - HANDLE BINDING FOR RRULE WITH CONTROLS
-//	// TODO - HANDLE GETTING PARSED RRULE
-////	$scope.parseRRule = function() {
-////		$scope.customers.push({ name: $scope.newCustomer.name, city: $scope.newCustomer.city });
-////	}
-//}
-
-////Controller for plain page with just comma-delimited list of recurrences
-//controllers.PlainController = function($scope, $routeParams, rruleParser)
-//{
-////	$scope.recurrences = [1,2,3];
-//	$scope.recurrences = $routeParams.params;
-//
-//	//	$scope.recurrences = rruleParser.parse($routeParams.rrule, $routeParams.dtstart, $routeParams.limit);
-//	// TODO - HANDLE DISPLAYING RECURRENCES ON DOM
-//}
-
-//rruleApp.controller(controllers);
+/*
+ * Build a date string
+ * MAY BE OBSOLETE - NEED TO TEST TIME ZONE WITH ANGULAR BINDING
+ */
+function buildDateString(date, delimiter)
+{
+    var yearString = date.toLocaleDateString('default', {year: 'numeric'});
+    var monthString = date.toLocaleDateString('default', {month: 'numeric'});
+    monthString = ("0" + monthString).slice(-2); // make 2-digits
+    var dayString = date.toLocaleDateString('default', {day: 'numeric'});
+    dayString = ("0" + dayString).slice(-2); // make 2-digits
+    return yearString + delimiter + monthString + delimiter + dayString;
+}
