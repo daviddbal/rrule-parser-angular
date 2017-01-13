@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="rruleApp">
+<html data-ng-app="rruleApp">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>RRULE Parser</title>
@@ -13,9 +13,7 @@
 	<script type="text/javascript" src="js/Controller.js"></script>
 </head>
 
-<body ng-controller="MainController">
-{{ recurrences }}
-
+<body  data-ng-controller="RRuleController" >
 	<table id="resultTable">
 		<thead>
 			<tr>
@@ -23,15 +21,15 @@
 			</tr>
 		</thead>
 		<tbody id="resultTableBody">
-			<tr ng-repeat="recurrence in recurrences">
+			<tr data-ng-repeat="recurrence in recurrences">
 				<td>{{ recurrence }}</td>
 			</tr>
 		</tbody>	
 	</table>
 
-	<div id="builderControl">
+	<div id="builderControl" data-ng-cloak>
 		Repeat Frequency:
-		<select required id="freq" onchange="buildRRule()">
+		<select required id="freq" data-ng-model="frequency">
 			<optgroup label="Day based">
 				<option value="DAILY">Daily</option>
 				<option value="WEEKLY">Weekly</option>
@@ -45,20 +43,20 @@
 			</optgroup>
 		</select>
 		<br>
-		Repeats every<input type="number" id="interval" onchange="buildRRule()" min="1" max="1000" value="1"><span id='intervalType'></span><br>
-		<span id='dayOfWeek' class="options">
-			<input type="checkbox" id="sundayCheckbox" onchange="buildRRule()" value="SUNDAY">Sun
-	  		<input type="checkbox" id="mondayCheckbox" onchange="buildRRule()" value="MONDAY" >Mon
-			<input type="checkbox" id="tuesdayCheckbox" onchange="buildRRule()" value="TUESDAY">Tue
-	  		<input type="checkbox" id="wednesdayCheckbox" onchange="buildRRule()" value="WEDNESDAY" >Wed
-			<input type="checkbox" id="thursdayCheckbox" onchange="buildRRule()" value="THURSDAY">Thu
-	  		<input type="checkbox" id="fridayCheckbox" onchange="buildRRule()" value="FRIDAY" >Fri
-	  		<input type="checkbox" id="saturdayCheckbox" onchange="buildRRule()" value="SATURDAY" >Sat<br>
+		Repeats every<input type="number" data-ng-model="interval" id="interval" min="1" max="1000" value="1"><span id='intervalType'></span><br>
+		<span id='dayOfWeek' class="options" data-ng-style="weeklyDisplayStyle">
+			<input type="checkbox" data-ng-model="daysOfWeek[0]" id="sundayCheckbox" data-ng-value="daysOfWeek[0]">{{daysOfWeekDisplay[0]}}
+	  		<input type="checkbox" data-ng-model="daysOfWeek[1]" id="mondayCheckbox" data-ng-value="daysOfWeek[1]">{{daysOfWeekDisplay[1]}}
+			<input type="checkbox" data-ng-model="daysOfWeek[2]" id="tuesdayCheckbox" data-ng-value="daysOfWeek[2]">{{daysOfWeekDisplay[2]}}
+	  		<input type="checkbox" data-ng-model="daysOfWeek[3]" id="wednesdayCheckbox" data-ng-value="daysOfWeek[3]">{{daysOfWeekDisplay[3]}}
+			<input type="checkbox" data-ng-model="daysOfWeek[4]" id="thursdayCheckbox" data-ng-value="daysOfWeek[4]">{{daysOfWeekDisplay[4]}}
+	  		<input type="checkbox" data-ng-model="daysOfWeek[5]" id="fridayCheckbox" data-ng-value="daysOfWeek[5]">{{daysOfWeekDisplay[5]}}
+	  		<input type="checkbox" data-ng-model="daysOfWeek[6]" id="saturdayCheckbox" data-ng-value="daysOfWeek[6]" >{{daysOfWeekDisplay[6]}}<br>
   		</span>
   
-		<span id='monthlyOptions' class="options">
-			<input type="radio" id="dayOfMonthCheckBox" name="monthlyRadioButtons" onchange="buildRRule()" value="DAY_OF_MONTH" checked>Day of month
-	  		<input type="radio" id="dayOfWeekCheckBox" name="monthlyRadioButtons" onchange="buildRRule()" value="DAY_OF_WEEK" >Day of week<br>
+		<span id='monthlyOptions' class="options" data-ng-style="monthlyDisplayStyle">
+			<input type="radio" id="dayOfMonthCheckBox" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions[0]">Day of month
+	  		<input type="radio" id="dayOfWeekCheckBox" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions[1]">Day of week<br>
   		</span>
   		
 		Start date<input type="date" id="dateStart" onchange="buildDTStart()">
@@ -79,7 +77,7 @@
 
  	<form id="rruleForm" action="RRuleServlet" method="get">
 		<div id="rrule">
-			RRULE <input type="text" size="53" id="rruleContent" name="rrule" ng-model="rruleContent" ><br>
+			RRULE <input type="text" size="53" id="rruleContent" name="rrule" data-ng-value="makeRRule()" ><br>
 			DTSTART <input type="text" size="50" id="dtstartContent" name="dtstart" value="DTSTART:20170101T120000" ><br>
 			Max Recurrences Displayed<input type="number" id="maxRecurrences" name="maxRecurrences" min="1" max="1000" value="50"><br>
 			<button id="submitButton">Submit</button>
