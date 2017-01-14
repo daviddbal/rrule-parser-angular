@@ -48,7 +48,7 @@
          <span id='intervalType'></span><br>
 		
 		<!-- Days of Week check boxes (e.g. Mon, Tues, etc.) -->
-		<span data-ng-show="dayOfWeekShow">
+		<span data-ng-show="weeklyOptionsShow">
 			<label data-ng-repeat="dayOfWeek in daysOfWeek">
 				<input
 				    type="checkbox"
@@ -60,8 +60,9 @@
 			</label>
 			<br>
 		</span>
-  
-		<span class="options" data-ng-style="monthlyDisplayStyle">
+
+        <!-- Monthly options check boxes (day-of-month and day-of-week) -->  
+		<span data-ng-show="monthlyOptionsShow">
 			<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_MONTH">Day of month
 	  		<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_WEEK">Day of week
 	  		<br>

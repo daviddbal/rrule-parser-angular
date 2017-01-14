@@ -15,10 +15,6 @@ input {
 	margin: 5px;
 }
 
- .options {
-	display: none;
-}
-
 table {
     border-collapse: collapse;
     border: 1px solid black;
