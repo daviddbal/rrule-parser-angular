@@ -44,7 +44,7 @@
 		</select>
 		<br>
 		Repeats every<input type="number" data-ng-model="interval" id="interval" min="1" max="1000" value="1"><span id='intervalType'></span><br>
-		<span id='dayOfWeek' class="options" data-ng-style="weeklyDisplayStyle">
+		<span class="options" data-ng-style="weeklyDisplayStyle">
 			<input type="checkbox" data-ng-model="daysOfWeek[0]" data-ng-value="daysOfWeek[0]">{{daysOfWeekDisplay[0]}}
 	  		<input type="checkbox" data-ng-model="daysOfWeek[1]" data-ng-value="daysOfWeek[1]">{{daysOfWeekDisplay[1]}}
 			<input type="checkbox" data-ng-model="daysOfWeek[2]" data-ng-value="daysOfWeek[2]">{{daysOfWeekDisplay[2]}}
@@ -55,24 +55,27 @@
 	  		<br>
   		</span>
   
-		<span id='monthlyOptions' class="options" data-ng-style="monthlyDisplayStyle">
+		<span class="options" data-ng-style="monthlyDisplayStyle">
 			<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_MONTH">Day of month
-	  		<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_WEEK">Day of week<br>
+	  		<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_WEEK">Day of week
+	  		<br>
   		</span>
   		
 		Start date<input type="date" data-ng-model="date" >
-		Start time<input type="time" data-ng-model="date" step="1"><br>
+		Start time<input type="time" data-ng-model="date" step="1">
+		<br>
 		
 		Ends:
-		<input type="radio" id="neverCheckBox" name="endRadioButtons" onchange="buildRRule()" checked>Never
-  		<input type="radio" id="afterCheckBox" name="endRadioButtons" onchange="buildRRule()" >After
-  		<input type="radio" id="onCheckBox" name="endRadioButtons" onchange="buildRRule()">On<br>
-  		<span id="countSpan" class="options">
-  			<input type="number" id="count" onchange="buildRRule()" min="1" max="1000" value="10">
-  			<span id='countType'></span><br>
+		<input type="radio" data-ng-model="endOption" name="endRadioButtons" data-ng-value="endOptions.NEVER">Never
+  		<input type="radio" data-ng-model="endOption" name="endRadioButtons" data-ng-value="endOptions.COUNT">After
+  		<input type="radio" data-ng-model="endOption" name="endRadioButtons" data-ng-value="endOptions.UNTIL">On
+  		<br>
+  		<span class="options" data-ng-style="countDisplayStyle">
+  			<input type="number" data-ng-model="count" min="1" max="1000" value="10">
+  			<label data-ng-value="countLabel"></label><br>
   		</span>
-  		<span id="untilSpan" class="options" style="display:false">
-  			End date<input type="date" id="until" onchange="buildRRule()"><br>
+  		<span class="options" data-ng-style="untilDisplayStyle">
+  			End date<input type="date" data-ng-model="until"><br>
   		</span>
 	</div>
 

@@ -49,17 +49,22 @@ rruleApp.controller('RRuleController', function($scope)
 	// END OPTIONS
 	$scope.endOptions = {
 			NEVER : 1,
-			AFTER : 2,
-			ON : 3
+			COUNT : 2,
+			UNTIL : 3
 			};
 	$scope.endOption = $scope.endOptions.NEVER;
-	$scope.monthlyDisplayStyle = {'display' : 'none'};	
+	$scope.count = 1;
+	$scope.countLabel = "events";
+	
+	$scope.countDisplayStyle = {'display' : 'none'};
+	$scope.untilDisplayStyle = {'display' : 'none'};
 	
 	// START DATE
 	$scope.date = date;
 	$scope.time = date;
 
 	// Make RRULE Content
+	// TODO - PUT THIS IN A CHILD CONTROLLER?
     $scope.makeRRule = function()
     {
     	// FREQ
@@ -110,42 +115,59 @@ rruleApp.controller('RRuleController', function($scope)
         /*
          * END criteria
          */
-    	var isAfterChecked = document.getElementById('afterCheckBox').checked;
-    	var isOnChecked = document.getElementById('onCheckBox').checked;
-    	if (isAfterChecked)
-    	{
-    		document.getElementById('countSpan').style.display = "inline";
-    		document.getElementById('untilSpan').style.display = "none";
-    		// Set COUNT
-    		var count = document.getElementById('count').value;
-    		var afterType = (count > 1) ? "events" : "event";
-    		document.getElementById('countType').innerHTML = afterType;
-    		rrule += ";COUNT=" + count;
-    	} else if (isOnChecked)
-    	{
-    		document.getElementById('untilSpan').style.display = "inline";	
-    		document.getElementById('countSpan').style.display = "none";
-    		var untilDateString = document.getElementById('until').value;
-    		var timeString = document.getElementById('timeStart').value;
-    		var timeZone = new Date().toString().substring(24);
-    		var offset = new Date().getTimezoneOffset();
-    		var untilDate = new Date(untilDateString + "T" + timeString);
-    		untilDate.setTime(untilDate.getTime() + untilDate.getTimezoneOffset()*60*1000); // time zone offset adjustment
-    		var timestamp = Date.parse(untilDate);
-    		if (! isNaN(timestamp))
-    		{
-    			var untilDateString = untilDate.toISOString();
-    			untilDateString = untilDateString.replace(/-/g, ""); // remove dashes
-    			untilDateString = untilDateString.replace(/:/g, ""); // remove colons
-    			untilDateString = untilDateString.substring(0, untilDateString.indexOf(".")) + "Z"; // remove fraction of second
-    			rrule += ";UNTIL=" + untilDateString;
-    		}
-    	} else
-    	{ // Never end checkbox
-    		document.getElementById('countSpan').style.display = "none";
-    		document.getElementById('untilSpan').style.display = "none";
-    	}
+    	if ($scope.endOption === $scope.endOptions.COUNT)
+		{
+    		$scope.countDisplayStyle = {'display' : 'inline'};
+    		rrule += ";COUNT=" + $scope.count;
+		} else
+		{
+    		$scope.countDisplayStyle = {'display' : 'none'};		
+		}
     	
+    	if ($scope.endOption === $scope.endOptions.UNTIL)
+		{
+    		$scope.untilDisplayStyle = {'display' : 'inline'};
+		} else
+		{
+    		$scope.untilDisplayStyle = {'display' : 'none'};
+		}
+
+//    	var isAfterChecked = document.getElementById('afterCheckBox').checked;
+//    	var isOnChecked = document.getElementById('onCheckBox').checked;
+//    	if (isAfterChecked)
+//    	{
+//    		document.getElementById('countSpan').style.display = "inline";
+//    		document.getElementById('untilSpan').style.display = "none";
+//    		// Set COUNT
+//    		var count = document.getElementById('count').value;
+//    		var afterType = (count > 1) ? "events" : "event";
+//    		document.getElementById('countType').innerHTML = afterType;
+//    		rrule += ";COUNT=" + count;
+//    	} else if (isOnChecked)
+//    	{
+//    		document.getElementById('untilSpan').style.display = "inline";	
+//    		document.getElementById('countSpan').style.display = "none";
+//    		var untilDateString = document.getElementById('until').value;
+//    		var timeString = document.getElementById('timeStart').value;
+//    		var timeZone = new Date().toString().substring(24);
+//    		var offset = new Date().getTimezoneOffset();
+//    		var untilDate = new Date(untilDateString + "T" + timeString);
+//    		untilDate.setTime(untilDate.getTime() + untilDate.getTimezoneOffset()*60*1000); // time zone offset adjustment
+//    		var timestamp = Date.parse(untilDate);
+//    		if (! isNaN(timestamp))
+//    		{
+//    			var untilDateString = untilDate.toISOString();
+//    			untilDateString = untilDateString.replace(/-/g, ""); // remove dashes
+//    			untilDateString = untilDateString.replace(/:/g, ""); // remove colons
+//    			untilDateString = untilDateString.substring(0, untilDateString.indexOf(".")) + "Z"; // remove fraction of second
+//    			rrule += ";UNTIL=" + untilDateString;
+//    		}
+//    	} else
+//    	{ // Never end checkbox
+//    		document.getElementById('countSpan').style.display = "none";
+//    		document.getElementById('untilSpan').style.display = "none";
+//    	}
+
     	return rrule;
     }
 	// 	TODO - HANDLE BINDING FOR RRULE WITH CONTROLS
