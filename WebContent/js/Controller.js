@@ -28,29 +28,11 @@ rruleApp.controller('RRuleController', function($scope)
 			{ name:'Minutely', type:'Day fraction based', unit:'Hour' }
 	];
 	$scope.frequency = $scope.frequencies[0];
-	$scope.handleFrequencyChange = function()
-	{
-    	if ($scope.frequency.name === "Weekly")
-		{
-    		$scope.weeklyOptionsShow = true;
-    		$scope.monthlyOptionsShow = false;
-		} else if ($scope.frequency.name  === "Monthly")
-		{
-    		$scope.weeklyOptionsShow = false;
-    		$scope.monthlyOptionsShow = true;
-		} else
-		{
-    		$scope.weeklyOptionsShow = false;
-    		$scope.monthlyOptionsShow = false;
-		}
-		$scope.handleCountChange();
-	}
 	
 	// INTERVAL
 	$scope.interval = 1;
 
 	// WEEKLY OPTIONS
-	$scope.weeklyOptionsShow = false;
 	$scope.daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 	$scope.daysOfWeekSelection = [];
 
@@ -69,9 +51,12 @@ rruleApp.controller('RRuleController', function($scope)
 			$scope.daysOfWeekSelection.push(dayOfWeek);
 		}
 	}
+	$scope.weeklyOptionsShow = function()
+	{
+		return $scope.frequency.name === 'Weekly';
+	}
 
 	// MONTHLY OPTIONS
-	$scope.monthlyOptionsShow = false;
 	$scope.monthlyOptions = {
 			DAY_OF_MONTH : 1,
 			DAY_OF_WEEK : 2
@@ -88,7 +73,12 @@ rruleApp.controller('RRuleController', function($scope)
 	$scope.endOption = $scope.endOptions.NEVER;
 	$scope.countDisplayStyle = {'display' : 'none'};
 	$scope.untilDisplayStyle = {'display' : 'none'};
+	$scope.monthlyOptionsShow = function()
+	{
+		return $scope.frequency.name === 'Monthly';
+	}
 
+	// TODO - obsolete - replace with ng-show methods
 	$scope.handleEndOptionChange = function()
 	{
 		if ($scope.endOption === $scope.endOptions.NEVER)
@@ -256,6 +246,7 @@ rruleApp.controller('RRuleController', function($scope)
 //		});
 //});
 
+// TODO - GET THIS TO WORK
 rruleApp.factory('rruleParser', function($http){
     return {
       parse: function(rrule, dtstart, limit){
