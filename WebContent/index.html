@@ -28,51 +28,38 @@
 	</table>
 
 	<div id="builderControl" data-ng-cloak>
+	       <span ng-repeat="(fruit,enabled) in fruits">
+          <input type="checkbox" ng-model="fruits[fruit]"> {{ fruit}}
+        </span>
+        list of fruits: {{ fruits}}
+	<br>
 		Repeat Frequency:
-		<select required id="freq" data-ng-model="frequency">
-			<optgroup label="Day based">
-				<option value="DAILY">Daily</option>
-				<option value="WEEKLY">Weekly</option>
-				<option value="MONTHLY">Monthly</option>
-				<option value="YEARLY">Yearly</option>
-			</optgroup>
-			<optgroup label="Day fraction based">
-				<option value="SECONDLY">Secondly</option>
-				<option value="MINUTELY">Minutely</option>
-				<option value="HOURLY">Hourly</option>
-			</optgroup>
+		<select data-ng-model="frequency" data-ng-change="handleFrequencyChange()" data-ng-options="f.name group by f.type for f in frequencies">
 		</select>
 		<br>
 		Repeats every<input type="number" data-ng-model="interval" id="interval" min="1" max="1000" value="1"><span id='intervalType'></span><br>
-		<span class="options" data-ng-style="weeklyDisplayStyle">
-			<input type="checkbox" data-ng-model="daysOfWeek[0]" data-ng-value="daysOfWeek[0]">{{daysOfWeekDisplay[0]}}
-	  		<input type="checkbox" data-ng-model="daysOfWeek[1]" data-ng-value="daysOfWeek[1]">{{daysOfWeekDisplay[1]}}
-			<input type="checkbox" data-ng-model="daysOfWeek[2]" data-ng-value="daysOfWeek[2]">{{daysOfWeekDisplay[2]}}
-	  		<input type="checkbox" data-ng-model="daysOfWeek[3]" data-ng-value="daysOfWeek[3]">{{daysOfWeekDisplay[3]}}
-			<input type="checkbox" data-ng-model="daysOfWeek[4]" data-ng-value="daysOfWeek[4]">{{daysOfWeekDisplay[4]}}
-	  		<input type="checkbox" data-ng-model="daysOfWeek[5]" data-ng-value="daysOfWeek[5]">{{daysOfWeekDisplay[5]}}
-	  		<input type="checkbox" data-ng-model="daysOfWeek[6]" data-ng-value="daysOfWeek[6]" >{{daysOfWeekDisplay[6]}}
-	  		<br>
-  		</span>
+		
+        <span class="options" data-ng-style="weeklyDisplayStyle" data-ng-repeat="dayOfWeek in daysOfWeek2" >
+            <input type="checkbox" data-ng-model="daysOfWeek2[dayOfWeek]"/> {{ dayOfWeek.name }}
+        </span>
   
 		<span class="options" data-ng-style="monthlyDisplayStyle">
 			<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_MONTH">Day of month
 	  		<input type="radio" data-ng-model="monthlyOption" name="monthlyRadioButtons" data-ng-value="monthlyOptions.DAY_OF_WEEK">Day of week
 	  		<br>
   		</span>
-  		
+  		<br>
 		Start date<input type="date" data-ng-model="date" >
 		Start time<input type="time" data-ng-model="date" step="1">
 		<br>
 		
 		Ends:
-		<input type="radio" data-ng-model="endOption" name="endRadioButtons" data-ng-value="endOptions.NEVER">Never
-  		<input type="radio" data-ng-model="endOption" name="endRadioButtons" data-ng-value="endOptions.COUNT">After
-  		<input type="radio" data-ng-model="endOption" name="endRadioButtons" data-ng-value="endOptions.UNTIL">On
+		<input type="radio" data-ng-model="endOption" data-ng-change="handleEndOptionChange()" name="endRadioButtons" data-ng-value="endOptions.NEVER">Never
+  		<input type="radio" data-ng-model="endOption" data-ng-change="handleEndOptionChange()" name="endRadioButtons" data-ng-value="endOptions.COUNT">After
+  		<input type="radio" data-ng-model="endOption" data-ng-change="handleEndOptionChange()" name="endRadioButtons" data-ng-value="endOptions.UNTIL">On
   		<br>
   		<span class="options" data-ng-style="countDisplayStyle">
-  			<input type="number" data-ng-model="count" min="1" max="1000" value="10">
-  			<label data-ng-value="countLabel"></label><br>
+  			<input type="number" data-ng-model="count" data-ng-change="handleCountChange()" min="1" max="1000" value="10">{{ countLabel }}
   		</span>
   		<span class="options" data-ng-style="untilDisplayStyle">
   			End date<input type="date" data-ng-model="until"><br>

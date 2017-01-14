@@ -15,28 +15,59 @@ rruleApp.controller('RRuleController', function($scope)
 	// NOW
 	var date = new Date();
 	date.setSeconds(0,0);
-	
+	$scope.fruits = { Mango: true, Banana: false};
+
 	// FREQUENCY
-	frequencyOptions = {
-			DAILY : 1,
-			WEEKLY : 2,
-			MONTHLY : 3,
-			YEARLY : 4,
-			SECONDLY : 5,
-			MINUTELY : 6,
-			HOURLY : 7
-	};
-	$scope.frequency = "DAILY";
+	  $scope.frequencies = [
+			{ name:'Daily', type:'Day based', unit:'Day' },
+			{ name:'Weekly', type:'Day based', unit:'Week' },
+			{ name:'Monthly', type:'Day based', unit:'Month' },
+			{ name:'Yearly', type:'Day based', unit:'Year' },
+			{ name:'Secondly', type:'Day fraction based', unit:'Second' },
+			{ name:'Hourly', type:'Day fraction based', unit:'Minute' },
+			{ name:'Minutely', type:'Day fraction based', unit:'Hour' }
+	];
+	$scope.frequency = $scope.frequencies[0];
+	$scope.handleFrequencyChange = function()
+	{
+    	if ($scope.frequency.name === "Weekly")
+		{
+    		$scope.weeklyDisplayStyle = {'display' : 'inline'};
+    		$scope.monthlyDisplayStyle = {'display' : 'none'};
+		} else if ($scope.frequency.name  === "Monthly")
+		{
+    		$scope.monthlyDisplayStyle = {'display' : 'inline'};
+    		$scope.weeklyDisplayStyle = {'display' : 'none'};
+		} else
+		{
+    		$scope.monthlyDisplayStyle = {'display' : 'none'};
+    		$scope.weeklyDisplayStyle = {'display' : 'none'};			
+		}
+		$scope.handleCountChange();
+	}
 	
 	// INTERVAL
 	$scope.interval = 1;
 
 	// WEEKLY OPTIONS
 	weeklyDisplayStyle = {'display' : 'none'};
-	$scope.daysOfWeek = [ false, false, false, false, false, false, false ];
-	daysOfWeekDisplay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+//	$scope.daysOfWeek = [ false, false, false, false, false, false, false ];
+//	$scope.daysOfWeekDisplay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+	$scope.daysOfWeek2 = [
+		{name:'Sun', checked:false},
+		{name:'Mon', checked:false},
+		{name:'Tue', checked:false},
+		{name:'Wed', checked:false},
+		{name:'Thu', checked:false},
+		{name:'Fri', checked:false},
+		{name:'Sat', checked:false}
+		];
+	$scope.daysOfWeek = { Sun:false, Mon:false, Tue:false, Wed:false, Thu:false, Fri:false, Sat:false };
+
 	var day = date.getDay();
-	$scope.daysOfWeek[day] = true;
+//	var key = Object.keys($scope.daysOfWeek)[day];
+//	console.log("key:" + key);
+	$scope.daysOfWeek2[day].checked = true;
 
 	// MONTHLY OPTIONS
 	$scope.monthlyOptions = {
@@ -53,11 +84,40 @@ rruleApp.controller('RRuleController', function($scope)
 			UNTIL : 3
 			};
 	$scope.endOption = $scope.endOptions.NEVER;
-	$scope.count = 1;
-	$scope.countLabel = "events";
-	
 	$scope.countDisplayStyle = {'display' : 'none'};
 	$scope.untilDisplayStyle = {'display' : 'none'};
+
+	$scope.handleEndOptionChange = function()
+	{
+		if ($scope.endOption === $scope.endOptions.NEVER)
+		{
+			$scope.countDisplayStyle = {'display' : 'none'};
+			$scope.untilDisplayStyle = {'display' : 'none'};
+		} else if ($scope.endOption === $scope.endOptions.COUNT)
+		{
+			$scope.countDisplayStyle = {'display' : 'inline'};			
+			$scope.untilDisplayStyle = {'display' : 'none'};
+		} else if ($scope.endOption === $scope.endOptions.UNTIL)
+		{
+			$scope.untilDisplayStyle = {'display' : 'inline'};			
+			$scope.countDisplayStyle = {'display' : 'none'};
+		}
+	};
+	
+	// COUNT
+	$scope.count = 1;
+	$scope.countLabel = "";
+	$scope.handleCountChange = function()
+	{
+		if ($scope.count > 1)
+		{
+			$scope.countLabel = $scope.frequency.unit + "s";
+		} else
+		{
+			$scope.countLabel = $scope.frequency.unit;
+		}
+	}
+	$scope.handleCountChange();	
 	
 	// START DATE
 	$scope.date = date;
@@ -68,7 +128,7 @@ rruleApp.controller('RRuleController', function($scope)
     $scope.makeRRule = function()
     {
     	// FREQ
-    	var rrule = "RRULE:FREQ=" + $scope.frequency;
+    	var rrule = "RRULE:FREQ=" + $scope.frequency.name.toUpperCase();
     	
     	// INTERVAL
     	if ($scope.interval > 1)
@@ -77,27 +137,23 @@ rruleApp.controller('RRuleController', function($scope)
 		}
     	
     	// WEEKLY OPTIONS
-    	if ($scope.frequency === "WEEKLY")
+    	if ($scope.frequency.name  === "Weekly")
 		{
-    		$scope.weeklyDisplayStyle = {'display' : 'inline'};
     		var days = "";
-    		for (i=0; i<$scope.daysOfWeek.length; i++)
-			{
-    			if ($scope.daysOfWeek[i])
-				{
-    				days += "," + $scope.daysOfWeekDisplay[i].substring(0,2).toUpperCase();
-				}
-			}
+//    		var arr = Object.keys(obj).map(function(k) { return obj[k] });
+//    		for (i=0; i<$scope.daysOfWeek.length; i++)
+//			{
+//    			if ($scope.daysOfWeek[i])
+//				{
+//    				days += "," + $scope.daysOfWeekDisplay[i].substring(0,2).toUpperCase();
+//				}
+//			}
     		rrule += ";BYDAY=" + days.substring(1);
-		} else
-		{
-    		$scope.weeklyDisplayStyle = {'display' : 'none'};
 		}
     	
     	// MONTHLY OPTIONS
-    	if ($scope.frequency === "MONTHLY")
+    	if ($scope.frequency.name  === "Monthly")
 		{
-    		$scope.monthlyDisplayStyle = {'display' : 'inline'};
     		if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_MONTH)
 			{
     			rrule += ";BYMONTHDAY=" + $scope.date.getDate();
@@ -117,20 +173,15 @@ rruleApp.controller('RRuleController', function($scope)
          */
     	if ($scope.endOption === $scope.endOptions.COUNT)
 		{
-    		$scope.countDisplayStyle = {'display' : 'inline'};
-    		rrule += ";COUNT=" + $scope.count;
-		} else
+    		if ($scope.count > 1)
+			{
+        		rrule += ";COUNT=" + $scope.count;
+			}
+		} else if ($scope.endOption === $scope.endOptions.UNTIL)
 		{
-    		$scope.countDisplayStyle = {'display' : 'none'};		
+    		// TODO
 		}
-    	
-    	if ($scope.endOption === $scope.endOptions.UNTIL)
-		{
-    		$scope.untilDisplayStyle = {'display' : 'inline'};
-		} else
-		{
-    		$scope.untilDisplayStyle = {'display' : 'none'};
-		}
+
 
 //    	var isAfterChecked = document.getElementById('afterCheckBox').checked;
 //    	var isOnChecked = document.getElementById('onCheckBox').checked;
