@@ -7,4 +7,4 @@ It uses a simple Java servlet employing iCalendarFX, a iCalendarFx library writt
 See RFC 5545 for more info about iCalendar.
 https://tools.ietf.org/html/rfc5545
 
-Feel free to contact the author, David Bal, at david.ba37@gmail.com.
+Feel free to contact the author, David Bal, at david.baL37@gmail.com.
