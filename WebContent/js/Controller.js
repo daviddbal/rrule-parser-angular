@@ -32,16 +32,19 @@ rruleApp.controller('RRuleController', function($scope)
 	{
     	if ($scope.frequency.name === "Weekly")
 		{
-    		$scope.weeklyDisplayStyle = {'display' : 'inline'};
+    		$scope.dayOfWeekShow = true;
+//    		$scope.weeklyDisplayStyle = {'display' : 'inline'};
     		$scope.monthlyDisplayStyle = {'display' : 'none'};
 		} else if ($scope.frequency.name  === "Monthly")
 		{
+    		$scope.dayOfWeekShow = false;
     		$scope.monthlyDisplayStyle = {'display' : 'inline'};
-    		$scope.weeklyDisplayStyle = {'display' : 'none'};
+//    		$scope.weeklyDisplayStyle = {'display' : 'none'};
 		} else
 		{
+    		$scope.dayOfWeekShow = false;
     		$scope.monthlyDisplayStyle = {'display' : 'none'};
-    		$scope.weeklyDisplayStyle = {'display' : 'none'};			
+//    		$scope.weeklyDisplayStyle = {'display' : 'none'};			
 		}
 		$scope.handleCountChange();
 	}
@@ -50,24 +53,47 @@ rruleApp.controller('RRuleController', function($scope)
 	$scope.interval = 1;
 
 	// WEEKLY OPTIONS
-	weeklyDisplayStyle = {'display' : 'none'};
-//	$scope.daysOfWeek = [ false, false, false, false, false, false, false ];
-//	$scope.daysOfWeekDisplay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-	$scope.daysOfWeek2 = [
-		{name:'Sun', checked:false},
-		{name:'Mon', checked:false},
-		{name:'Tue', checked:false},
-		{name:'Wed', checked:false},
-		{name:'Thu', checked:false},
-		{name:'Fri', checked:false},
-		{name:'Sat', checked:false}
-		];
-	$scope.daysOfWeek = { Sun:false, Mon:false, Tue:false, Wed:false, Thu:false, Fri:false, Sat:false };
+//	$scope.weeklyDisplayStyle = {'display' : 'none'};
+	$scope.dayOfWeekShow = false;
+	$scope.daysOfWeek = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+	$scope.daysOfWeekSelection = [];
+//	$scope.daysOfWeek2 = [
+//		{name:'Sun', selected:false},
+//		{name:'Mon', selected:false},
+//		{name:'Tue', selected:false},
+//		{name:'Wed', selected:false},
+//		{name:'Thu', selected:false},
+//		{name:'Fri', selected:false},
+//		{name:'Sat', selected:false}
+//		];
+//	// selected days
+//	$scope.selection = [];
+//	// Helper method to get selected days
+//	$scope.selectedDays = function selectedFruits() {
+//		return filterFilter($scope.fruits, { selected:true });
+//	}
 
+//	$scope.daysOfWeek = { Sun:false, Mon:false, Tue:false, Wed:false, Thu:false, Fri:false, Sat:false };
+
+	// Add today to selected day of week
 	var day = date.getDay();
+	$scope.daysOfWeekSelection.push($scope.daysOfWeek[day]);
+	
+	$scope.toggleDayOfWeekSelection = function toggleDayOfWeekSelection(dayOfWeek)
+	{
+		var index = $scope.daysOfWeekSelection.indexOf(dayOfWeek);
+		if (index > -1)
+		{
+			$scope.daysOfWeekSelection.splice(index,1);
+		} else
+		{
+			$scope.daysOfWeekSelection.push(dayOfWeek);
+		}
+	}
+
 //	var key = Object.keys($scope.daysOfWeek)[day];
 //	console.log("key:" + key);
-	$scope.daysOfWeek2[day].checked = true;
+//	$scope.daysOfWeek2[day].checked = true;
 
 	// MONTHLY OPTIONS
 	$scope.monthlyOptions = {
