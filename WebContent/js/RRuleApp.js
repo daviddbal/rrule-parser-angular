@@ -1,4 +1,6 @@
 var rruleApp = angular.module('rruleApp', ['ngRoute']);
+var servletURL = "http://localhost:8080/RRuleRest1/RRuleServlet";
+var ipAddress = null;
 
 rruleApp.controller('RRuleController', function($scope)
 {
@@ -97,9 +99,12 @@ rruleApp.controller('RRuleController', function($scope)
 	// START DATE
 	$scope.date = date;
 	$scope.time = new Date(date);
+	
+	$scope.maxRecurrences = 50; // set to default value
 
-	// Make RRULE Content
-	// TODO - PUT THIS IN A CHILD CONTROLLER?
+	/*
+	 * Make RRULE Content
+	 */
     $scope.makeRRule = function()
     {
     	// FREQ
@@ -136,9 +141,7 @@ rruleApp.controller('RRuleController', function($scope)
 			}
 		}
     	
-        /*
-         * END criteria
-         */
+    	// END CRITERIA
     	if ($scope.endOptionSelected === endOptions.COUNT)
 		{
     		if ($scope.count > 1)
@@ -156,64 +159,67 @@ rruleApp.controller('RRuleController', function($scope)
     	return rrule;
     }
     
-    // Make DTSTART content
+    /*
+     * Make DTSTART content
+     */
     $scope.makeDTStart = function()
     {
     	var dateString = buildDateString($scope.date, "");
-//    	return makeDateTime(dateString, "");
-//    	var dateString = $scope.date.toISOString();
-    	console.log(dateString);
-//    	return dateString;
-//    	return $scope.date.format("isoDateTime");
-//    	var day = $scope.date.getDate();
-//    	var month = date.getMonth();
-//    	var year = date.getFullYear();
-//    	var dateString = $scope.date.toISOString();
-//    	dateString = dateString.replace("-","");
-//    	dateString = dateString.replace("-","");
-
 		var timeString = buildTimeString($scope.time, "");
-		
-//        var timeString = $scope.time.toString();
-
-        if (dateString === "")
-    	{
-        	document.getElementById("submitButton").disabled = true;
-    	} else
-    	{
-        	document.getElementById("submitButton").disabled = false;
-    	    var dtstartContentString = "DTSTART"
-    	    if (timeString === "")
-    		{
-    			dtstartContentString += ";VALUE=DATE" + ":" + dateString;
-    		} else
-    		{
-//    			timeString = timeString.replace(":", ""); // remove minutes :
-//    			if (timeString.indexOf(":") > 0)
-//    			{
-//    				timeString = timeString.replace(":", ""); // remove seconds :
-//    			} else
-//    			{
-//    				timeString += "00"; // add 2 zeros is seconds isn't present
-//    			}
-    			dtstartContentString += ":" + dateString + "T" + timeString;
-    		}
-    	}
+	    var dtstartContentString = "DTSTART"
+	    if (timeString === "")
+		{
+			dtstartContentString += ";VALUE=DATE" + ":" + dateString;
+		} else
+		{
+			dtstartContentString += ":" + dateString + "T" + timeString;
+		}
         return dtstartContentString;
-//    	document.getElementById('dtstartContent').value = dtstartContentString;
+    }
+    
+    /*
+     * Get list of recurrences for the RRULE from servlet and render in table
+     */
+    $scope.recurrences = [ 'No recurrences' ];
+    $scope.getRecurrences = function()
+    {
+    	$.ajax({
+    		type: 'GET',
+    		contentType: 'application/x-www-form-urlencoded',
+    		data: $("#rruleForm").serialize(),
+    		url: servletURL,
+    		dataType: "text",
+    		beforeSend: function(request) {
+    		    request.setRequestHeader("X-FORWARDED-FOR", ipAddress);
+    		  },
+    		success: renderList
+    	});
+    }
+    
+    /*
+     * Helper method to render comma-delimited list of date/times into table
+     */
+    function renderList(data)
+    {
+    	$scope.recurrences = data.split(",");
+    	$scope.$apply();
     }
 });
 
 
-// TODO - GET THIS TO WORK
-rruleApp.factory('rruleParser', function($http){
-    return {
-      parse: function(rrule, dtstart, limit){
-    	  return "1,2,3";
-//        $http.get('countries.json').success(callback);
-      }
-    };
-  });
+//// TODO - GET THIS TO WORK
+//rruleApp.factory('rruleParser', function($http){
+//    return {
+//      parse: function(rrule, dtstart, limit){
+//    	  return "1,2,3";
+////        $http.get('countries.json').success(callback);
+//      }
+//    };
+//  });
+
+/*
+ * Date/time helper functions
+ */
 
 function makeDateTime(dateString, timeString)
 {
@@ -227,7 +233,7 @@ function makeDateTime(dateString, timeString)
 }
 
 /*
- * Build a date string
+ * Build ISO 8601 date string for iCalendar date/time value - e.g. 20170112
  */
 function buildDateString(date, delimiter)
 {
@@ -239,22 +245,21 @@ function buildDateString(date, delimiter)
     return yearString + delimiter + monthString + delimiter + dayString;
 }
 
+/*
+ * Build ISO 8601 time string for iCalendar date/time value - e.g. 105500
+ */
 function buildTimeString(date, delimeter)
 {
-	if (date === null)
+	if (date === null || typeof date === 'undefined') // TODO - NEED TO VERIFY TIME IS VALID - NOT JUST NULL
 	{
 		return "";
 	}
-	var options = { hour12: false, hour: 'numeric' };
-	var hourString =  date.toLocaleDateString('default', options);
+	var hourString = date.getHours();
     hourString = ("0" + hourString).slice(-2); // make 2-digits
-	var minuteString =  date.toLocaleDateString('default', {minute: 'numeric'});
+	var minuteString = date.getMinutes();
     minuteString = ("0" + minuteString).slice(-2); // make 2-digits
-	console.log("minuteString:" + minuteString);
 	var secondString =  date.getSeconds();
-	console.log("secondString:" + secondString);
     secondString = ("0" + secondString).slice(-2).substring(0,2); // make 2-digits
-	console.log("secondString:" + secondString);
     return hourString + delimeter + minuteString + delimeter + secondString;
 }
 

@@ -10,7 +10,7 @@
 	<script src="js/angular.js"></script>
 	<script src="js/angular-route.js"></script>
 	<script src="js/jquery.js"></script>
-	<script type="text/javascript" src="js/Controller.js"></script>
+	<script type="text/javascript" src="js/RRuleApp.js"></script>
 </head>
 
 <body data-ng-controller="RRuleController" >
@@ -120,8 +120,7 @@
     <!-- RRULE content fields -->
  	<form 
  	    id="rruleForm" 
- 	    action="RRuleServlet"
- 	    method="get">
+ 	    >
 		<div id="rrule">
 			RRULE
 			<input
@@ -148,11 +147,24 @@
 			    name="maxRecurrences" 
 			    min="1" 
 			    max="1000" 
-			    value="50"
+			    data-ng-model="maxRecurrences"
 			>
 			<br>
-			<button id="submitButton">Submit</button>
+			<button data-ng-click="getRecurrences()">Submit</button>
 		</div>
 	</form>
+	
+	<h3>Resulting Recurrences Series:</h3>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Date/time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="recurrence in recurrences">
+            <td>{{ recurrence }}</td>
+        </tbody>    
+    </table>
 </body>
 </html>
