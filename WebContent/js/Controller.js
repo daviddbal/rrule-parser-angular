@@ -96,7 +96,7 @@ rruleApp.controller('RRuleController', function($scope)
 	
 	// START DATE
 	$scope.date = date;
-	$scope.time = date;
+	$scope.time = new Date(date);
 
 	// Make RRULE Content
 	// TODO - PUT THIS IN A CHILD CONTROLLER?
@@ -241,6 +241,10 @@ function buildDateString(date, delimiter)
 
 function buildTimeString(date, delimeter)
 {
+	if (date === null)
+	{
+		return "";
+	}
 	var options = { hour12: false, hour: 'numeric' };
 	var hourString =  date.toLocaleDateString('default', options);
     hourString = ("0" + hourString).slice(-2); // make 2-digits
