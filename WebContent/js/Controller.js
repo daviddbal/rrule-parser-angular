@@ -27,7 +27,7 @@ rruleApp.controller('RRuleController', function($scope)
 			{ name:'Hourly', type:'Day fraction based', unit:'Minute' },
 			{ name:'Minutely', type:'Day fraction based', unit:'Hour' }
 	];
-	$scope.frequency = $scope.frequencies[0];
+	$scope.frequency = $scope.frequencies[0]; // default to Daily
 	
 	// INTERVAL
 	$scope.interval = 1;
@@ -63,20 +63,18 @@ rruleApp.controller('RRuleController', function($scope)
 			};
 	$scope.monthlyOption = $scope.monthlyOptions.DAY_OF_MONTH;
 	$scope.monthlyDisplayStyle = {'display' : 'none'};
-	
-	// END OPTIONS
-	$scope.endOptions = {
-			NEVER : 1,
-			COUNT : 2,
-			UNTIL : 3
-			};
-	$scope.endOption = $scope.endOptions.NEVER;
-	$scope.countDisplayStyle = {'display' : 'none'};
-	$scope.untilDisplayStyle = {'display' : 'none'};
 	$scope.monthlyOptionsShow = function()
 	{
 		return $scope.frequency.name === 'Monthly';
 	}
+	
+	// END OPTIONS
+	$scope.endOptions = ['Never', 'After', 'On'];
+	$scope.endOptionSelected = 'Never';
+
+	$scope.countDisplayStyle = {'display' : 'none'};
+	$scope.untilDisplayStyle = {'display' : 'none'};
+
 
 	// TODO - obsolete - replace with ng-show methods
 	$scope.handleEndOptionChange = function()

@@ -14,19 +14,6 @@
 </head>
 
 <body  data-ng-controller="RRuleController" >
-	<table id="resultTable">
-		<thead>
-			<tr>
-				<th>Date/time</th>
-			</tr>
-		</thead>
-		<tbody id="resultTableBody">
-			<tr data-ng-repeat="recurrence in recurrences">
-				<td>{{ recurrence }}</td>
-			</tr>
-		</tbody>	
-	</table>
-
 	<div id="builderControl" data-ng-cloak>
         <!-- Frequency Options (e.g. Daily, Weekly, etc.) -->
 		Repeat Frequency:
@@ -51,8 +38,7 @@
 			<label data-ng-repeat="dayOfWeek in daysOfWeek">
 				<input
 				    type="checkbox"
-				    name="selectedDaysOfWeek[]"
-				    value="{{ dayOfWeek }}"
+				    name="dayOfWeekCheckBoxes"
 				    data-ng-checked="daysOfWeekSelection.indexOf(dayOfWeek) > -1"
 				    data-ng-click="toggleDayOfWeekSelection(dayOfWeek)"
 				  > {{ dayOfWeek }}
@@ -70,12 +56,19 @@
 		Start date<input type="date" data-ng-model="date" >
 		Start time<input type="time" data-ng-model="date" step="1">
 		<br>
-		
+
+        <!--End options (e.g. Never, After, On) -->		
 		Ends:
-		<input type="radio" data-ng-model="endOption" data-ng-change="handleEndOptionChange()" name="endRadioButtons" data-ng-value="endOptions.NEVER">Never
-  		<input type="radio" data-ng-model="endOption" data-ng-change="handleEndOptionChange()" name="endRadioButtons" data-ng-value="endOptions.COUNT">After
-  		<input type="radio" data-ng-model="endOption" data-ng-change="handleEndOptionChange()" name="endRadioButtons" data-ng-value="endOptions.UNTIL">On
-  		<br>
+        <label data-ng-repeat="endOption in endOptions">
+            <input
+                type="radio"
+                name="endOptionRadioButtons"
+                data-ng-model="$parent.endOptionSelected"
+                data-ng-value="endOption"
+              > {{ endOption }}
+        </label>
+        <br>
+
   		<span class="options" data-ng-style="countDisplayStyle">
   			<input type="number" data-ng-model="count" data-ng-change="handleCountChange()" min="1" max="1000" value="10">{{ countLabel }}
   		</span>
