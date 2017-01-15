@@ -1,33 +1,30 @@
 var rruleApp = angular.module('rruleApp', ['ngRoute']);
 
-//rruleApp.controller('MainController', function($scope)
-//{
-//	
-//	// 	TODO - HANDLE BINDING FOR RRULE WITH CONTROLS
-//	// TODO - HANDLE GETTING PARSED RRULE
-////	$scope.parseRRule = function() {
-////		$scope.customers.push({ name: $scope.newCustomer.name, city: $scope.newCustomer.city });
-////	}
-//});
-
 rruleApp.controller('RRuleController', function($scope)
 {
 	// NOW
 	var date = new Date();
 	date.setSeconds(0,0);
-	$scope.fruits = { Mango: true, Banana: false};
 
 	// FREQUENCY
-	  $scope.frequencies = [
-			{ name:'Daily', type:'Day based', unit:'Day' },
-			{ name:'Weekly', type:'Day based', unit:'Week' },
-			{ name:'Monthly', type:'Day based', unit:'Month' },
-			{ name:'Yearly', type:'Day based', unit:'Year' },
-			{ name:'Secondly', type:'Day fraction based', unit:'Second' },
-			{ name:'Hourly', type:'Day fraction based', unit:'Minute' },
-			{ name:'Minutely', type:'Day fraction based', unit:'Hour' }
+	freq = {
+			DAILY:'Daily',
+			WEEKLY:'Weekly',
+			MONTHLY:'Monthly',
+			YEARLY:'Yearly',
+			SECONDLY:'Secondly',
+			MINUTELY:'Minutely',
+			HOURLY:'Hourly'	};
+	$scope.frequencies = [
+			{ name:freq.DAILY, type:'Day based', unit:'Day' },
+			{ name:freq.WEEKLY, type:'Day based', unit:'Week' },
+			{ name:freq.MONTHLY, type:'Day based', unit:'Month' },
+			{ name:freq.YEARLY, type:'Day based', unit:'Year' },
+			{ name:freq.SECONDLY, type:'Day fraction based', unit:'Second' },
+			{ name:freq.MINUTELY, type:'Day fraction based', unit:'Minute' },
+			{ name:freq.HOURLY, type:'Day fraction based', unit:'Hour' }
 	];
-	$scope.frequency = $scope.frequencies[0]; // default to Daily
+	$scope.frequencySelected = $scope.frequencies[0]; // default to Daily
 	
 	// INTERVAL
 	$scope.interval = 1;
@@ -51,49 +48,25 @@ rruleApp.controller('RRuleController', function($scope)
 			$scope.daysOfWeekSelection.push(dayOfWeek);
 		}
 	}
-	$scope.weeklyOptionsShow = function()
+	$scope.isWeeklyOptionsShown = function()
 	{
-		return $scope.frequency.name === 'Weekly';
+		return $scope.frequencySelected.name === freq.WEEKLY;
 	}
 
 	// MONTHLY OPTIONS
-	$scope.monthlyOptions = {
-			DAY_OF_MONTH : 1,
-			DAY_OF_WEEK : 2
-			};
-	$scope.monthlyOption = $scope.monthlyOptions.DAY_OF_MONTH;
-	$scope.monthlyDisplayStyle = {'display' : 'none'};
-	$scope.monthlyOptionsShow = function()
+	monthlyOptions = { DAY_OF_MONTH:'Day of Month', DAY_OF_WEEK:'Day of week' };
+	$scope.monthlyOptions = [ monthlyOptions.DAY_OF_MONTH, monthlyOptions.DAY_OF_WEEK ];
+	$scope.monthlyOptionSelected = monthlyOptions.DAY_OF_MONTH;
+	$scope.isMonthlyOptionsShown = function()
 	{
-		return $scope.frequency.name === 'Monthly';
+		return $scope.frequencySelected.name === freq.MONTHLY;
 	}
 	
 	// END OPTIONS
-	$scope.endOptions = ['Never', 'After', 'On'];
-	$scope.endOptionSelected = 'Never';
+	endOptions = { NEVER:'Never', COUNT:'After', UNTIL:'On' };
+	$scope.endOptions = [ endOptions.NEVER, endOptions.COUNT, endOptions.UNTIL ];
+	$scope.endOptionSelected = endOptions.NEVER;
 
-	$scope.countDisplayStyle = {'display' : 'none'};
-	$scope.untilDisplayStyle = {'display' : 'none'};
-
-
-	// TODO - obsolete - replace with ng-show methods
-	$scope.handleEndOptionChange = function()
-	{
-		if ($scope.endOption === $scope.endOptions.NEVER)
-		{
-			$scope.countDisplayStyle = {'display' : 'none'};
-			$scope.untilDisplayStyle = {'display' : 'none'};
-		} else if ($scope.endOption === $scope.endOptions.COUNT)
-		{
-			$scope.countDisplayStyle = {'display' : 'inline'};			
-			$scope.untilDisplayStyle = {'display' : 'none'};
-		} else if ($scope.endOption === $scope.endOptions.UNTIL)
-		{
-			$scope.untilDisplayStyle = {'display' : 'inline'};			
-			$scope.countDisplayStyle = {'display' : 'none'};
-		}
-	};
-	
 	// COUNT
 	$scope.count = 1;
 	$scope.countLabel = "";
@@ -101,13 +74,25 @@ rruleApp.controller('RRuleController', function($scope)
 	{
 		if ($scope.count > 1)
 		{
-			$scope.countLabel = $scope.frequency.unit + "s";
+			$scope.countLabel = $scope.frequencySelected.unit + "s";
 		} else
 		{
-			$scope.countLabel = $scope.frequency.unit;
+			$scope.countLabel = $scope.frequencySelected.unit;
 		}
 	}
-	$scope.handleCountChange();	
+	$scope.handleCountChange();
+	$scope.isCountShown = function()
+	{
+		return $scope.endOptionSelected === endOptions.COUNT;
+	}
+	
+	// UNTIL
+	$scope.until = new Date(date);
+	$scope.until.setMonth(date.getMonth()+1);
+	$scope.isUntilShown = function()
+	{
+		return $scope.endOptionSelected === endOptions.UNTIL;
+	}
 	
 	// START DATE
 	$scope.date = date;
@@ -118,7 +103,7 @@ rruleApp.controller('RRuleController', function($scope)
     $scope.makeRRule = function()
     {
     	// FREQ
-    	var rrule = "RRULE:FREQ=" + $scope.frequency.name.toUpperCase();
+    	var rrule = "RRULE:FREQ=" + $scope.frequencySelected.name.toUpperCase();
     	
     	// INTERVAL
     	if ($scope.interval > 1)
@@ -127,7 +112,7 @@ rruleApp.controller('RRuleController', function($scope)
 		}
     	
     	// WEEKLY OPTIONS
-    	if ($scope.frequency.name  === "Weekly")
+    	if ($scope.frequencySelected.name  === freq.WEEKLY)
 		{
     		days = "";
     		var daysArray = $scope.daysOfWeekSelection.forEach( function(day)
@@ -138,111 +123,87 @@ rruleApp.controller('RRuleController', function($scope)
 		}
     	
     	// MONTHLY OPTIONS
-    	if ($scope.frequency.name  === "Monthly")
+    	if ($scope.frequencySelected.name  === freq.MONTHLY)
 		{
-    		if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_MONTH)
+    		if ($scope.monthlyOptionSelected === monthlyOptions.DAY_OF_MONTH)
 			{
     			rrule += ";BYMONTHDAY=" + $scope.date.getDate();
-			} else if ($scope.monthlyOption === $scope.monthlyOptions.DAY_OF_WEEK)
+			} else if ($scope.monthlyOptionSelected === monthlyOptions.DAY_OF_WEEK)
 			{
 	    		var ordinal = weekOrdinalInMonth($scope.date);
 	    		var day = $scope.daysOfWeek[$scope.date.getDay()];
 				rrule += ";BYDAY=" + ordinal + day.substring(0,2).toUpperCase();
 			}
-		} else
-		{
-			$scope.monthlyDisplayStyle = {'display' : 'none'};
 		}
     	
         /*
          * END criteria
          */
-    	if ($scope.endOption === $scope.endOptions.COUNT)
+    	if ($scope.endOptionSelected === endOptions.COUNT)
 		{
     		if ($scope.count > 1)
 			{
         		rrule += ";COUNT=" + $scope.count;
 			}
-		} else if ($scope.endOption === $scope.endOptions.UNTIL)
+		} else if ($scope.endOptionSelected === endOptions.UNTIL)
 		{
-    		// TODO
+			var untilDateString = $scope.until.toISOString();
+			untilDateString = untilDateString.replace(/-/g, ""); // remove dashes
+			untilDateString = untilDateString.replace(/:/g, ""); // remove colons
+			untilDateString = untilDateString.substring(0, untilDateString.indexOf(".")) + "Z"; // remove fraction of second
+			rrule += ";UNTIL=" + untilDateString;
 		}
-
-
-//    	var isAfterChecked = document.getElementById('afterCheckBox').checked;
-//    	var isOnChecked = document.getElementById('onCheckBox').checked;
-//    	if (isAfterChecked)
-//    	{
-//    		document.getElementById('countSpan').style.display = "inline";
-//    		document.getElementById('untilSpan').style.display = "none";
-//    		// Set COUNT
-//    		var count = document.getElementById('count').value;
-//    		var afterType = (count > 1) ? "events" : "event";
-//    		document.getElementById('countType').innerHTML = afterType;
-//    		rrule += ";COUNT=" + count;
-//    	} else if (isOnChecked)
-//    	{
-//    		document.getElementById('untilSpan').style.display = "inline";	
-//    		document.getElementById('countSpan').style.display = "none";
-//    		var untilDateString = document.getElementById('until').value;
-//    		var timeString = document.getElementById('timeStart').value;
-//    		var timeZone = new Date().toString().substring(24);
-//    		var offset = new Date().getTimezoneOffset();
-//    		var untilDate = new Date(untilDateString + "T" + timeString);
-//    		untilDate.setTime(untilDate.getTime() + untilDate.getTimezoneOffset()*60*1000); // time zone offset adjustment
-//    		var timestamp = Date.parse(untilDate);
-//    		if (! isNaN(timestamp))
-//    		{
-//    			var untilDateString = untilDate.toISOString();
-//    			untilDateString = untilDateString.replace(/-/g, ""); // remove dashes
-//    			untilDateString = untilDateString.replace(/:/g, ""); // remove colons
-//    			untilDateString = untilDateString.substring(0, untilDateString.indexOf(".")) + "Z"; // remove fraction of second
-//    			rrule += ";UNTIL=" + untilDateString;
-//    		}
-//    	} else
-//    	{ // Never end checkbox
-//    		document.getElementById('countSpan').style.display = "none";
-//    		document.getElementById('untilSpan').style.display = "none";
-//    	}
-
     	return rrule;
     }
-	// 	TODO - HANDLE BINDING FOR RRULE WITH CONTROLS
-	// TODO - HANDLE GETTING PARSED RRULE
-//	$scope.parseRRule = function() {
-//		$scope.customers.push({ name: $scope.newCustomer.name, city: $scope.newCustomer.city });
-//	}
+    
+    // Make DTSTART content
+    $scope.makeDTStart = function()
+    {
+    	var dateString = buildDateString($scope.date, "");
+//    	return makeDateTime(dateString, "");
+//    	var dateString = $scope.date.toISOString();
+    	console.log(dateString);
+//    	return dateString;
+//    	return $scope.date.format("isoDateTime");
+//    	var day = $scope.date.getDate();
+//    	var month = date.getMonth();
+//    	var year = date.getFullYear();
+//    	var dateString = $scope.date.toISOString();
+//    	dateString = dateString.replace("-","");
+//    	dateString = dateString.replace("-","");
+
+		var timeString = buildTimeString($scope.time, "");
+		
+//        var timeString = $scope.time.toString();
+
+        if (dateString === "")
+    	{
+        	document.getElementById("submitButton").disabled = true;
+    	} else
+    	{
+        	document.getElementById("submitButton").disabled = false;
+    	    var dtstartContentString = "DTSTART"
+    	    if (timeString === "")
+    		{
+    			dtstartContentString += ";VALUE=DATE" + ":" + dateString;
+    		} else
+    		{
+//    			timeString = timeString.replace(":", ""); // remove minutes :
+//    			if (timeString.indexOf(":") > 0)
+//    			{
+//    				timeString = timeString.replace(":", ""); // remove seconds :
+//    			} else
+//    			{
+//    				timeString += "00"; // add 2 zeros is seconds isn't present
+//    			}
+    			dtstartContentString += ":" + dateString + "T" + timeString;
+    		}
+    	}
+        return dtstartContentString;
+//    	document.getElementById('dtstartContent').value = dtstartContentString;
+    }
 });
 
-//MyCtrl.resolve = {
-//		  myHttpResponse : function($http) {
-//		    return $http({
-//		        method: 'GET',
-//		        url: 'http://example.com'
-//		    })
-//		    .success(function(data, status) {
-//		        // Probably no need to do anything here.
-//		    })
-//		    .error(function(data, status){
-//		        // Maybe add an error message to a service here.
-//		        // In this case your $http promise was rejected automatically and the view won't render.
-//		    });
-
-//rruleApp.config(function($routeProvider)
-//{
-//	$routeProvider
-//		.when('/', {
-//			templateUrl: 'partials/main.html',
-//			controller: 'MainController'
-//		})
-//		.when('/:params', {
-//			templateUrl: 'partials/plain.html',
-//			controller: 'PlainController'
-//		})
-//		.otherwise({
-//			redirectTo: '/'
-//		});
-//});
 
 // TODO - GET THIS TO WORK
 rruleApp.factory('rruleParser', function($http){
@@ -254,6 +215,44 @@ rruleApp.factory('rruleParser', function($http){
     };
   });
 
+function makeDateTime(dateString, timeString)
+{
+	if (timeString === "")
+	{
+		var d = new Date();
+		var options = { hour12: false };
+		timeString = d.toLocaleTimeString('default', options);
+	}
+	return dateString + "T" + timeString;
+}
+
+/*
+ * Build a date string
+ */
+function buildDateString(date, delimiter)
+{
+    var yearString = date.toLocaleDateString('default', {year: 'numeric'});
+    var monthString = date.toLocaleDateString('default', {month: 'numeric'});
+    monthString = ("0" + monthString).slice(-2); // make 2-digits
+    var dayString = date.toLocaleDateString('default', {day: 'numeric'});
+    dayString = ("0" + dayString).slice(-2); // make 2-digits
+    return yearString + delimiter + monthString + delimiter + dayString;
+}
+
+function buildTimeString(date, delimeter)
+{
+	var options = { hour12: false, hour: 'numeric' };
+	var hourString =  date.toLocaleDateString('default', options);
+    hourString = ("0" + hourString).slice(-2); // make 2-digits
+	var minuteString =  date.toLocaleDateString('default', {minute: 'numeric'});
+    minuteString = ("0" + minuteString).slice(-2); // make 2-digits
+	console.log("minuteString:" + minuteString);
+	var secondString =  date.getSeconds();
+	console.log("secondString:" + secondString);
+    secondString = ("0" + secondString).slice(-2).substring(0,2); // make 2-digits
+	console.log("secondString:" + secondString);
+    return hourString + delimeter + minuteString + delimeter + secondString;
+}
 
 function weekOrdinalInMonth(date)
 {
