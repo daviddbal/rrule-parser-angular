@@ -101,6 +101,17 @@ rruleApp.controller('RRuleController', function($scope)
 	$scope.time = new Date(date);
 	
 	$scope.maxRecurrences = 50; // set to default value
+	
+//	var firstTime = true;
+//	$scope.init = function()
+//	{
+//		console.log("first time:" + firstTime);
+//		if (firstTime)
+//		{
+//			$scope.getRecurrences();
+//			firstTime = false;
+//		}		
+//	}
 
 	/*
 	 * Make RRULE Content
@@ -166,15 +177,15 @@ rruleApp.controller('RRuleController', function($scope)
     {
     	var dateString = buildDateString($scope.date, "");
 		var timeString = buildTimeString($scope.time, "");
-	    var dtstartContentString = "DTSTART"
+	    var dtstart = "DTSTART"
 	    if (timeString === "")
 		{
-			dtstartContentString += ";VALUE=DATE" + ":" + dateString;
+	    	dtstart += ";VALUE=DATE" + ":" + dateString;
 		} else
 		{
-			dtstartContentString += ":" + dateString + "T" + timeString;
+			dtstart += ":" + dateString + "T" + timeString;
 		}
-        return dtstartContentString;
+        return dtstart;
     }
     
     /*
@@ -183,10 +194,12 @@ rruleApp.controller('RRuleController', function($scope)
     $scope.recurrences = [ 'No recurrences' ];
     $scope.getRecurrences = function()
     {
+    	var htmlData = encodeURI("rrule=" + $scope.makeRRule() + "&dtstart=" + $scope.makeDTStart() + "&maxRecurrences=" + $scope.maxRecurrences);
     	$.ajax({
     		type: 'GET',
     		contentType: 'application/x-www-form-urlencoded',
-    		data: $("#rruleForm").serialize(),
+    		data: htmlData,
+//    		data: $("#rruleForm").serialize(),
     		url: servletURL,
     		dataType: "text",
     		beforeSend: function(request) {
@@ -202,8 +215,12 @@ rruleApp.controller('RRuleController', function($scope)
     function renderList(data)
     {
     	$scope.recurrences = data.split(",");
-    	$scope.$apply();
+    	$scope.$apply(); // necessary because AJAX function is not withing the angular digest cycle.
     }
+    
+    $scope.$watch('$viewContentLoaded', function(){
+    	$scope.getRecurrences();
+     });
 });
 
 
