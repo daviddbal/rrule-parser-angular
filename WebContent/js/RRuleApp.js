@@ -101,17 +101,6 @@ rruleApp.controller('RRuleController', function($scope)
 	$scope.time = new Date(date);
 	
 	$scope.maxRecurrences = 50; // set to default value
-	
-//	var firstTime = true;
-//	$scope.init = function()
-//	{
-//		console.log("first time:" + firstTime);
-//		if (firstTime)
-//		{
-//			$scope.getRecurrences();
-//			firstTime = false;
-//		}		
-//	}
 
 	/*
 	 * Make RRULE Content
@@ -192,7 +181,7 @@ rruleApp.controller('RRuleController', function($scope)
      * Get list of recurrences for the RRULE from servlet and render in table
      */
     $scope.recurrences = [ 'No recurrences' ];
-    $scope.getRecurrences = function()
+    var getRecurrences = function()
     {
     	var htmlData = encodeURI("rrule=" + $scope.makeRRule() + "&dtstart=" + $scope.makeDTStart() + "&maxRecurrences=" + $scope.maxRecurrences);
     	$.ajax({
@@ -218,21 +207,23 @@ rruleApp.controller('RRuleController', function($scope)
     	$scope.$apply(); // necessary because AJAX function is not withing the angular digest cycle.
     }
     
-    $scope.$watch('$viewContentLoaded', function(){
-    	$scope.getRecurrences();
+    // Get initial set of recurrences after page is loaded
+    $scope.$watch('$viewContentLoaded', function()
+    		{
+    	getRecurrences();
      });
+    
+    $scope.isResultsOnSamePage = true;
+    $scope.processForm = function(event)
+    {
+    	console.log("processForm");
+    	if ($scope.isResultsOnSamePage)
+		{
+    		event.preventDefault();
+    		getRecurrences();
+		}
+    };
 });
-
-
-//// TODO - GET THIS TO WORK
-//rruleApp.factory('rruleParser', function($http){
-//    return {
-//      parse: function(rrule, dtstart, limit){
-//    	  return "1,2,3";
-////        $http.get('countries.json').success(callback);
-//      }
-//    };
-//  });
 
 /*
  * Date/time helper functions
