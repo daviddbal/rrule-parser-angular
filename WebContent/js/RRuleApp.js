@@ -1,5 +1,5 @@
 var rruleApp = angular.module('rruleApp', ['ngRoute']);
-var servletURL = "http://localhost:8080/RRuleRest1/RRuleServlet";
+var servletURL = "http://localhost:8080/rrule-parser-angular/RRuleServlet";
 var ipAddress = null;
 
 rruleApp.controller('RRuleController', function($scope)
@@ -70,7 +70,7 @@ rruleApp.controller('RRuleController', function($scope)
 	$scope.endOptionSelected = endOptions.NEVER;
 
 	// COUNT
-	$scope.count = 1;
+	$scope.count = 10;
 	$scope.countLabel = "";
 	$scope.handleCountChange = function()
 	{

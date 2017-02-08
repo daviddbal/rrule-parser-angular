@@ -26,7 +26,7 @@ public class RRuleServlet extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-//    	System.out.println("in servlet");
+    	System.out.println("in servlet");
 //    	try {
 //			Thread.sleep(5000);
 //		} catch (InterruptedException e) {
@@ -38,9 +38,9 @@ public class RRuleServlet extends HttpServlet {
 		int maxRecurrences = Integer.parseInt(request.getParameter("maxRecurrences"));
 		String dtstartContent = request.getParameter("dtstart");
 		DateTimeStart dateTimeStart = DateTimeStart.parse(dtstartContent);
-		String ipAddress = request.getHeader("X-FORWARDED-FOR");  
-	       if (ipAddress == null) {  
-	         ipAddress = request.getRemoteAddr();  
+		String ipAddress = request.getHeader("X-FORWARDED-FOR");
+	       if (ipAddress == null || ipAddress.equals("null")) {  
+	         ipAddress = request.getRemoteAddr();
 	   }
 	
 		String recurrences;
@@ -50,8 +50,14 @@ public class RRuleServlet extends HttpServlet {
 					.limit(maxRecurrences)
 					.map(t -> t.toString())
 					.collect(Collectors.joining(","));
-//	System.out.println(ipAddress);
-			// Store request in database if ip is not null
+		} catch (Exception e)
+		{
+			recurrences = "Invalid";
+		}
+		
+		// Store request in database if ip is not null
+		try
+		{
 			if ((ipAddress != null) && ! ipAddress.equals("null"))
 			{
 				RRule r = new RRule(rruleContent, dtstartContent, maxRecurrences, ipAddress);
@@ -59,8 +65,11 @@ public class RRuleServlet extends HttpServlet {
 			}
 		} catch (Exception e)
 		{
-			recurrences = "Invalid";
+			// No database access - just display results
+//			System.out.println("do nothing");
 		}
+
+		
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 //		out.print("Recurrence Series:" + LS + rrules);
