@@ -26,7 +26,7 @@ public class RRuleServlet extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    	System.out.println("in servlet");
+//    	System.out.println("in servlet");
 //    	try {
 //			Thread.sleep(5000);
 //		} catch (InterruptedException e) {
