@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class ConnectionHelper {
+	// TODO - Use connection pool
 	private static Connection connection;
     
 	public static Connection getConnection() throws SQLException
@@ -17,6 +18,15 @@ public class ConnectionHelper {
 		{
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
+				
+//				String dbName = System.getProperty("RDS_DB_NAME");
+//				String userName = System.getProperty("RDS_USERNAME");
+//				String password = System.getProperty("RDS_PASSWORD");
+//				String hostname = System.getProperty("RDS_HOSTNAME");
+//				String port = System.getProperty("RDS_PORT");
+//				String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
+//				connection = DriverManager.getConnection(jdbcUrl);
+				
             	ResourceBundle bundle = ResourceBundle.getBundle("net/balsoftware/util/db");
                 String url = bundle.getString("url");
                 String user = bundle.getString("user");

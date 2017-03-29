@@ -5,20 +5,19 @@ import java.io.PrintWriter;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import jfxtras.icalendarfx.properties.component.recurrence.RecurrenceRule;
-import jfxtras.icalendarfx.properties.component.time.DateTimeStart;
 import net.balsoftware.bean.RRule;
+import net.balsoftware.icalendar.properties.component.recurrence.RecurrenceRule;
+import net.balsoftware.icalendar.properties.component.time.DateTimeStart;
 import net.balsoftware.service.RRuleService;
 
 /**
  * Servlet implementation
  */
-@WebServlet("/RRuleServlet")
+//@WebServlet("/RRuleServlet")
 public class RRuleServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private RRuleService service = new RRuleService();
@@ -26,13 +25,14 @@ public class RRuleServlet extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-//    	System.out.println("in servlet");
 //    	try {
 //			Thread.sleep(5000);
 //		} catch (InterruptedException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
+//    	Connection c = ConnectionHelper.getRemoteConnection();
+//    	System.out.println("connection:" + c);
     	
     	String rruleContent = request.getParameter("rrule");
 		int maxRecurrences = Integer.parseInt(request.getParameter("maxRecurrences"));
@@ -66,10 +66,9 @@ public class RRuleServlet extends HttpServlet {
 		} catch (Exception e)
 		{
 			// No database access - just display results
-//			System.out.println("do nothing");
+			System.out.println("no database access");
 		}
 
-		
 		response.setContentType("text/plain");
 		PrintWriter out = response.getWriter();
 //		out.print("Recurrence Series:" + LS + rrules);
