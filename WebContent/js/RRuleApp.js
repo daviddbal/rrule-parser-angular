@@ -102,18 +102,19 @@ rruleApp.controller('RRuleController', function($scope)
 	
 	$scope.maxRecurrences = 50; // set to default value
 
+	$scope.rrule;
 	/*
 	 * Make RRULE Content
 	 */
     $scope.makeRRule = function()
     {
     	// FREQ
-    	var rrule = "RRULE:FREQ=" + $scope.frequencySelected.name.toUpperCase();
+    	$scope.rrule = "RRULE:FREQ=" + $scope.frequencySelected.name.toUpperCase();
     	
     	// INTERVAL
     	if ($scope.interval > 1)
 		{
-    		rrule += ";INTERVAL=" + $scope.interval;
+    		$scope.rrule += ";INTERVAL=" + $scope.interval;
 		}
     	
     	// WEEKLY OPTIONS
@@ -124,7 +125,7 @@ rruleApp.controller('RRuleController', function($scope)
     		{
     			days += "," + day.substring(0,2).toUpperCase();
     		});
-    		rrule += ";BYDAY=" + days.substring(1);
+    		$scope.rrule += ";BYDAY=" + days.substring(1);
 		}
     	
     	// MONTHLY OPTIONS
@@ -132,12 +133,12 @@ rruleApp.controller('RRuleController', function($scope)
 		{
     		if ($scope.monthlyOptionSelected === monthlyOptions.DAY_OF_MONTH)
 			{
-    			rrule += ";BYMONTHDAY=" + $scope.date.getDate();
+    			$scope.rrule += ";BYMONTHDAY=" + $scope.date.getDate();
 			} else if ($scope.monthlyOptionSelected === monthlyOptions.DAY_OF_WEEK)
 			{
 	    		var ordinal = weekOrdinalInMonth($scope.date);
 	    		var day = $scope.daysOfWeek[$scope.date.getDay()];
-				rrule += ";BYDAY=" + ordinal + day.substring(0,2).toUpperCase();
+	    		$scope.rrule += ";BYDAY=" + ordinal + day.substring(0,2).toUpperCase();
 			}
 		}
     	
@@ -146,7 +147,7 @@ rruleApp.controller('RRuleController', function($scope)
 		{
     		if ($scope.count > 1)
 			{
-        		rrule += ";COUNT=" + $scope.count;
+    			$scope.rrule += ";COUNT=" + $scope.count;
 			}
 		} else if ($scope.endOptionSelected === endOptions.UNTIL)
 		{
@@ -154,11 +155,13 @@ rruleApp.controller('RRuleController', function($scope)
 			untilDateString = untilDateString.replace(/-/g, ""); // remove dashes
 			untilDateString = untilDateString.replace(/:/g, ""); // remove colons
 			untilDateString = untilDateString.substring(0, untilDateString.indexOf(".")) + "Z"; // remove fraction of second
-			rrule += ";UNTIL=" + untilDateString;
+			$scope.rrule += ";UNTIL=" + untilDateString;
 		}
-    	return rrule;
+    	return $scope.rrule;
     }
+	$scope.rrule = $scope.makeRRule();
     
+	$scope.dtstart;
     /*
      * Make DTSTART content
      */
@@ -176,6 +179,7 @@ rruleApp.controller('RRuleController', function($scope)
 		}
         return dtstart;
     }
+	$scope.dtstart = $scope.makeDTStart();
     
     /*
      * Get list of recurrences for the RRULE from servlet and render in table
@@ -183,7 +187,8 @@ rruleApp.controller('RRuleController', function($scope)
     $scope.recurrences = [ 'No recurrences' ];
     var getRecurrences = function()
     {
-    	var htmlData = encodeURI("rrule=" + $scope.makeRRule() + "&dtstart=" + $scope.makeDTStart() + "&maxRecurrences=" + $scope.maxRecurrences);
+    	console.log("rrule=" + $scope.rrule);
+    	var htmlData = encodeURI("rrule=" + $scope.rrule + "&dtstart=" + $scope.dtstart + "&maxRecurrences=" + $scope.maxRecurrences);
     	$.ajax({
     		type: 'GET',
     		contentType: 'application/x-www-form-urlencoded',

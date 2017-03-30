@@ -14,160 +14,167 @@
 </head>
 
 <body data-ng-controller="RRuleController" >
-    <h1>RRULE Parser</h1>
-    <h4>Introduction</h4>
-    <p>This is an iCalendar RRULE (recurrence rule) parser based on <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> .
-    It generates a list of date or date/time values defined by RRULE and DTSTART values.  It uses iCalendar-lib, an iCalendar Java library from <a href="https://github.com/daviddbal/icalendar-lib">github</a>.
-    </p>
-    <h4>Usage</h4>
-    <p>
-        This application can be used two ways:
-        <ol>
-            <li>Modify the controls found in the first box such as repeat frequency, start date, etc.  When they are changed the RRULE and DTSTART properties will automatically modified accordingly.</li>
-            <li>Type in a RRULE and DTSTART property manually.  While the controls only handle a subset of the <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> RRULE elements, you can use all RRULE elements by typing the property manually.  Manual changes to the RRULE and DTSTART fields do not change the control's settings.</li>
-        </ol>
-    </p>
-    <p>There is a checkbox, selected by default, that toggles between displaying the recurrences on this page and in another page as a comma-delimited list.  When displayed on another page, notice the URL is a simple HTTP get method.  This service can be freely accessed for parsing up to 1000 recurrences for any RRULE programmatically.
-    </p>
-    <p>If you have any comments please feel free to send me an email at <a href="mailto:david.bal37@gmail.com">david.bal37@gmail.com</a>
-    </p>
+    <h1>RRULE Parser/Recurrence Calculator</h1>
+    <div id="builder">
+	    <h4>Introduction</h4>
+	    <p>The iCalendar RRULE (recurrence rule) parser and recurrence calculator is based on <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> .
+	    It generates a list of date or date/time values defined by RRULE and DTSTART values.  It uses iCalendar-lib, an iCalendar Java library from <a href="https://github.com/daviddbal/icalendar-lib">github</a>.
+	    </p>
+	    <h4>Usage</h4>
+	    <p>
+	        This application can be used two ways:
+	        <ol>
+	            <li>Modify the controls found in the first box such as repeat frequency, start date, etc.  When they are changed the RRULE and DTSTART properties will automatically modified accordingly.</li>
+	            <li>Type in a RRULE and DTSTART property manually.  While the controls only handle a subset of the <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> RRULE elements, you can use all RRULE elements by typing the property manually.  Manual changes to the RRULE and DTSTART fields do not change the control's settings.</li>
+	        </ol>
+	    </p>
+	    <p>There is a checkbox, selected by default, that toggles between displaying the recurrences on this page and in another page as a comma-delimited list.  When displayed on another page, notice the URL is a simple HTTP get method.  This service can be freely accessed for parsing up to 1000 recurrences for any RRULE programmatically.
+	    </p>
+	    <p>If you have any comments please feel free to send me an email at <a href="mailto:david.bal37@gmail.com">david.bal37@gmail.com</a>
+	    </p>
 
-    Post results on same page
-    <input
-        type="checkbox"
-        data-ng-model="isResultsOnSamePage"
-    >
-
-	<div id="builderControl" data-ng-cloak>
-        <!-- Frequency Options (e.g. Daily, Weekly, etc.) -->
-		Repeat Frequency:
-		<select
-		    data-ng-model="frequencySelected" 
-		    data-ng-change="handleCountChange()"
-		    data-ng-options="f.name group by f.type for f in frequencies">
-		</select>
-		<br>
-		Repeats every
-		<input 
-            data-ng-model="interval" 
-            type="number"
-            id="interval" 
-            min="1" 
-            max="1000" 
-            value="1"
-         >
-         <span id='intervalType'></span><br>
-		
-		<!-- Days of Week check boxes (e.g. Mon, Tues, etc.) -->
-		<span data-ng-show="isWeeklyOptionsShown()">
-			<label data-ng-repeat="dayOfWeek in daysOfWeek">
-				<input
-				    type="checkbox"
-				    name="dayOfWeekCheckBoxes"
-				    data-ng-checked="daysOfWeekSelection.indexOf(dayOfWeek) > -1"
-				    data-ng-click="toggleDayOfWeekSelection(dayOfWeek)"
-				  >
-				  {{ dayOfWeek }}
-			</label>
+        Post results on same page
+	    <input
+	        type="checkbox"
+	        data-ng-model="isResultsOnSamePage"
+	    >
+	    <br>
+    
+		<div id="builderControl" data-ng-cloak>
+	        <!-- Frequency Options (e.g. Daily, Weekly, etc.) -->
+			Repeat Frequency:
+			<select
+			    data-ng-model="frequencySelected" 
+			    data-ng-change="handleCountChange()"
+			    data-ng-options="f.name group by f.type for f in frequencies">
+			</select>
 			<br>
-		</span>
-
-        <!-- Monthly options check boxes (day-of-month and day-of-week) -->
-        <span data-ng-show="isMonthlyOptionsShown()">
-	        <label data-ng-repeat="monthlyOption in monthlyOptions">
+			Repeats every
+			<input 
+	            data-ng-model="interval" 
+	            type="number"
+	            id="interval" 
+	            min="1" 
+	            max="1000" 
+	            value="1"
+	         >
+	         <span id='intervalType'></span><br>
+			
+			<!-- Days of Week check boxes (e.g. Mon, Tues, etc.) -->
+			<span data-ng-show="isWeeklyOptionsShown()">
+				<label data-ng-repeat="dayOfWeek in daysOfWeek">
+					<input
+					    type="checkbox"
+					    name="dayOfWeekCheckBoxes"
+					    data-ng-checked="daysOfWeekSelection.indexOf(dayOfWeek) > -1"
+					    data-ng-click="toggleDayOfWeekSelection(dayOfWeek)"
+					  >
+					  {{ dayOfWeek }}
+				</label>
+				<br>
+			</span>
+	
+	        <!-- Monthly options check boxes (day-of-month and day-of-week) -->
+	        <span data-ng-show="isMonthlyOptionsShown()">
+		        <label data-ng-repeat="monthlyOption in monthlyOptions">
+		            <input
+		                type="radio"
+		                name="monthlyRadioButtons"
+		                data-ng-model="$parent.monthlyOptionSelected"
+		                data-ng-value="monthlyOption"
+		              >
+		              {{ monthlyOption }}
+		        </label>
+		        <br>
+	        </span>
+	
+			Start date<input type="date" data-ng-model="date" >
+			Start time<input type="time" data-ng-model="time" step="1">
+			<br>
+	
+	        <!--End options (e.g. Never, After, On) -->		
+			Ends:
+	        <label data-ng-repeat="endOption in endOptions">
 	            <input
 	                type="radio"
-	                name="monthlyRadioButtons"
-	                data-ng-model="$parent.monthlyOptionSelected"
-	                data-ng-value="monthlyOption"
+	                name="endOptionRadioButtons"
+	                data-ng-model="$parent.endOptionSelected"
+	                data-ng-value="endOption"
 	              >
-	              {{ monthlyOption }}
+	              {{ endOption }}
 	        </label>
 	        <br>
-        </span>
-
-		Start date<input type="date" data-ng-model="date" >
-		Start time<input type="time" data-ng-model="time" step="1">
-		<br>
-
-        <!--End options (e.g. Never, After, On) -->		
-		Ends:
-        <label data-ng-repeat="endOption in endOptions">
-            <input
-                type="radio"
-                name="endOptionRadioButtons"
-                data-ng-model="$parent.endOptionSelected"
-                data-ng-value="endOption"
-              >
-              {{ endOption }}
-        </label>
-        <br>
-
-  		<span data-ng-show="isCountShown()">
-      			<input
-      			    type="number"
-      			    data-ng-model="count" 
-      			    data-ng-change="handleCountChange()" 
-      			    min="1" 
-      			    max="1000" 
-      			    value="10"
-   			    >
-   			    {{ countLabel }}
-  		</span>
-  		<span data-ng-show="isUntilShown()">
-  			End date
-  			<input type="date" data-ng-model="until">
-  			<br>
-  		</span>
-	</div>
-
-    <!-- RRULE content fields -->
- 	<form action="RRuleServlet" method="get" data-ng-submit="processForm($event)">
-		<div id="rrule">
-			RRULE
-			<input
-			    type="text"
-			    size="53" 
-			    id="rruleContent" 
-			    name="rrule" 
-			    data-ng-value="makeRRule()"
-		    >
-		    <br>
-			DTSTART
-			<input
-			    type="text" 
-			    size="50" 
-			    id="dtstartContent" 
-			    name="dtstart"
-			    data-ng-value="makeDTStart()"
-			>
-			<br>
-			Max Recurrences Displayed
-			<input
-			    type="number" 
-			    id="maxRecurrences" 
-			    name="maxRecurrences" 
-			    min="1" 
-			    max="1000" 
-			    data-ng-model="maxRecurrences"
-			    data-ng-change="init()"
-			>
-			<br>
-			<button>Submit</button>
-		</div>
-	</form>
 	
-	<h3>Resulting Recurrences Series:</h3>
-    <table id="resultTable">
-        <thead>
-            <tr>
-                <th>Date/time</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr data-ng-repeat="recurrence in recurrences">
-            <td>{{ recurrence }}</td>
-        </tbody>    
-    </table>
+	  		<span data-ng-show="isCountShown()">
+	      			<input
+	      			    type="number"
+	      			    data-ng-model="count" 
+	      			    data-ng-change="handleCountChange()" 
+	      			    min="1" 
+	      			    max="1000" 
+	      			    value="10"
+	   			    >
+	   			    {{ countLabel }}
+	  		</span>
+	  		<span data-ng-show="isUntilShown()">
+	  			End date
+	  			<input type="date" data-ng-model="until">
+	  			<br>
+	  		</span>
+		</div>
+
+	    <!-- RRULE content fields -->
+	 	<form action="RRuleServlet" method="get" data-ng-submit="processForm($event)">
+			<div id="rrule">
+				RRULE
+				<input
+				    type="text"
+				    size="53" 
+				    id="rruleContent" 
+				    name="rrule"
+				    data-ng-model="rrule"
+				    data-ng-value="makeRRule()"
+			    >
+			    <br>
+				DTSTART
+				<input
+				    type="text" 
+				    size="50" 
+				    id="dtstartContent" 
+				    name="dtstart"
+                    data-ng-model="dtstart"
+				    data-ng-value="makeDTStart()"
+				>
+				<br>
+				Max Recurrences Displayed
+				<input
+				    type="number" 
+				    id="maxRecurrences" 
+				    name="maxRecurrences" 
+				    min="1" 
+				    max="1000" 
+				    data-ng-model="maxRecurrences"
+				    data-ng-change="init()"
+				>
+				<br>
+				<button>Submit</button>
+			</div>
+		</form>
+	</div>
+	
+	<div id="results">
+		<h3>Resulting Recurrences:</h3>
+	    <table id="resultTable">
+	        <thead>
+	            <tr>
+	                <th>Date/time</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr data-ng-repeat="recurrence in recurrences">
+	            <td>{{ recurrence }}</td>
+	        </tbody>    
+	    </table>
+    </div>
 </body>
 </html>
