@@ -1,5 +1,6 @@
 var rruleApp = angular.module('rruleApp', ['ngRoute']);
-var servletURL = "http://sample-env-1.p7bebpmk9m.us-west-2.elasticbeanstalk.com/RRuleServlet";
+//var servletURL = "http://sample-env-1.p7bebpmk9m.us-west-2.elasticbeanstalk.com/RRuleServlet";
+var servletURL = "RRuleServlet";
 var ipAddress = null;
 
 rruleApp.controller('RRuleController', function($scope)

@@ -21,7 +21,7 @@ public class RRuleDao {
     public List<RRule> getAllRRules() {
         List<RRule> list = new ArrayList<RRule>();
         Connection c = null;
-    	String sql = "SELECT * FROM rrule.history ORDER BY created";
+    	String sql = "SELECT * FROM history ORDER BY created";
         try {
             c = ConnectionHelper.getConnection();
             Statement s = c.createStatement();
@@ -42,7 +42,7 @@ public class RRuleDao {
 	{
         Connection c = null;
         RRule rrule = null;
-    	String sql = "SELECT * FROM rrule.history where uid = ?";
+    	String sql = "SELECT * FROM history where uid = ?";
         try {
             c = ConnectionHelper.getConnection();
             PreparedStatement ps = c.prepareStatement(sql);
@@ -62,7 +62,7 @@ public class RRuleDao {
 	
 	public RRule addRRule(RRule rrule)
 	{
-        String sql = "INSERT INTO rrule.history (rrule_content, dtstart_content, max_recurrences, created, ip_address) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO history (rrule_content, dtstart_content, max_recurrences, created, ip_address) VALUES (?, ?, ?, ?, ?)";
         Connection c = null;
         try {
             c = ConnectionHelper.getConnection();
@@ -88,7 +88,7 @@ public class RRuleDao {
 	
 	public RRule updateRRule(RRule rrule)
 	{
-        String sql = "UPDATE rrule.history SET rrule_content=?, dtstart_content=?, max_recurrences=?, created=? WHERE uid=?";
+        String sql = "UPDATE history SET rrule_content=?, dtstart_content=?, max_recurrences=?, created=? WHERE uid=?";
         Connection c = null;
         try {
             c = ConnectionHelper.getConnection();

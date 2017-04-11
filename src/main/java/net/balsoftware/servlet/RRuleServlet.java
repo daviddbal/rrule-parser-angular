@@ -25,14 +25,7 @@ public class RRuleServlet extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-//    	try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//    	Connection c = ConnectionHelper.getRemoteConnection();
-//    	System.out.println("connection:" + c);
+//    	System.out.println("in servlet:");
     	
     	String rruleContent = request.getParameter("rrule");
 		int maxRecurrences = Integer.parseInt(request.getParameter("maxRecurrences"));
@@ -54,7 +47,12 @@ public class RRuleServlet extends HttpServlet {
 		{
 			recurrences = "Invalid";
 		}
-		
+
+		// Return response to client
+		response.setContentType("text/plain");
+		PrintWriter out = response.getWriter();
+		out.print(recurrences);
+
 		// Store request in database if ip is not null
 		try
 		{
@@ -62,16 +60,12 @@ public class RRuleServlet extends HttpServlet {
 			{
 				RRule r = new RRule(rruleContent, dtstartContent, maxRecurrences, ipAddress);
 				service.addRRule(r);
+//				System.out.println("finished adding to DB");
 			}
 		} catch (Exception e)
 		{
 			// No database access - just display results
 			System.out.println("no database access");
 		}
-
-		response.setContentType("text/plain");
-		PrintWriter out = response.getWriter();
-//		out.print("Recurrence Series:" + LS + rrules);
-		out.print(recurrences);
 	}
 }
