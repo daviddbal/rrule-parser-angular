@@ -1,5 +1,5 @@
 var rruleApp = angular.module('rruleApp', ['ngRoute']);
-var servletURL = "http://localhost:8080/rrule-parser-angular/RRuleServlet";
+var endpointURL = "https://pjfqxbg7ph.execute-api.us-west-2.amazonaws.com/default/rrule";
 var ipAddress = null;
 
 rruleApp.controller('RRuleController', function($scope)
@@ -178,21 +178,25 @@ rruleApp.controller('RRuleController', function($scope)
     }
     
     /*
-     * Get list of recurrences for the RRULE from servlet and render in table
+     * Get list of recurrences for the RRULE from endpoint and render in table
      */
     $scope.recurrences = [ 'No recurrences' ];
     var getRecurrences = function()
     {
-    	var htmlData = encodeURI("rrule=" + $scope.makeRRule() + "&dtstart=" + $scope.makeDTStart() + "&maxRecurrences=" + $scope.maxRecurrences);
+		var queryObj ={ rrule : $scope.makeRRule(),
+				   dtstart : $scope.makeDTStart(),
+				   maxRecurrences : $scope.maxRecurrences
+		};
+		queryString = $.param(queryObj);
     	$.ajax({
     		type: 'GET',
     		contentType: 'application/x-www-form-urlencoded',
-    		data: htmlData,
+    		data: queryString,
 //    		data: $("#rruleForm").serialize(),
-    		url: servletURL,
+    		url: endpointURL,
     		dataType: "text",
     		beforeSend: function(request) {
-    		    request.setRequestHeader("X-FORWARDED-FOR", ipAddress);
+//    		    request.setRequestHeader("X-FORWARDED-FOR", ipAddress);
     		  },
     		success: renderList
     	});
@@ -221,6 +225,10 @@ rruleApp.controller('RRuleController', function($scope)
 		{
     		event.preventDefault();
     		getRecurrences();
+		// } else {
+    	// 	event.preventDefault();
+		// 	console.log("redirect")
+		// 	window.location.href = endpointURL + "rrule=" + $scope.makeRRule() + "&dtstart=" + $scope.makeDTStart() + "&maxRecurrences=" + $scope.maxRecurrences;
 		}
     };
 });
