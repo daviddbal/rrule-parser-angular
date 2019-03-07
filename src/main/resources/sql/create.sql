@@ -1,5 +1,6 @@
-CREATE SCHEMA `rrule` ;
-CREATE TABLE `rrule`.`history` (
+CREATE SCHEMA `rrule`;
+USE `rrule`;
+CREATE TABLE `history` (
   `uid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `rrule_content` VARCHAR(80) NOT NULL,
   `dtstart_content` VARCHAR(45) NOT NULL,

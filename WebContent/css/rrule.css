@@ -28,3 +28,12 @@ table td {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
+#builder, #results {
+	float: left;
+	width: 70%;
+}
+
+#results {
+	width: 25%;
+}

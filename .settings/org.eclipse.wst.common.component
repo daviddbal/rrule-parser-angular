@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="rrule-parser-angular">
-        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+	<wb-module deploy-name="rrule-parser-angular">
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <property name="context-root" value="rrule-parser-angular"/>
-        <property name="java-output-path" value="/rrule-parser-angular/bin"/>
-    </wb-module>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+		<property name="context-root" value="rrule-parser-angular"/>
+	</wb-module>
 </project-modules>
