@@ -169,15 +169,15 @@ rruleApp.controller('RRuleController', function($scope)
     {
     	var dateString = buildDateString($scope.date, "");
 		var timeString = buildTimeString($scope.time, "");
-	    var dtstart = "DTSTART"
+	    $scope.dtstart = "DTSTART"
 	    if (timeString === "")
 		{
-	    	dtstart += ";VALUE=DATE" + ":" + dateString;
+	    	$scope.dtstart += ";VALUE=DATE" + ":" + dateString;
 		} else
 		{
-			dtstart += ":" + dateString + "T" + timeString;
+			$scope.dtstart += ":" + dateString + "T" + timeString;
 		}
-        return dtstart;
+        return $scope.dtstart;
     }
 	$scope.dtstart = $scope.makeDTStart();
 	
