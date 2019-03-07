@@ -195,7 +195,6 @@ rruleApp.controller('RRuleController', function($scope)
 		 } else {
 			rruleText = $("#rruleContent").val();
 		}
-		console.log(rruleText);
 		var queryObj ={ 'rrule' : rruleText,
 				   'dtstart' : $scope.makeDTStart(),
 				   'maxRecurrences' : $scope.maxRecurrences
