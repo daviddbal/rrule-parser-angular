@@ -276,10 +276,12 @@ rruleApp.controller('RRuleController', function($scope)
 
 	$scope.putRRule = function putRRule(newRRule) {
 		$("#rruleContent").val(newRRule);
+		getRecurrences();;
 	};
 
 	$scope.putDTStart = function putRRule(newDTStart) {
 		$("#dtstartContent").val(newDTStart);
+		getRecurrences();
 	};
 });
 
