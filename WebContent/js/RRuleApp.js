@@ -272,7 +272,15 @@ rruleApp.controller('RRuleController', function($scope)
 		// 	console.log("redirect")
 		// 	window.location.href = endpointURL + "rrule=" + $scope.makeRRule() + "&dtstart=" + $scope.makeDTStart() + "&maxRecurrences=" + $scope.maxRecurrences;
 		}
-    };
+	};
+
+	$scope.putRRule = function putRRule(newRRule) {
+		$("#rruleContent").val(newRRule);
+	};
+
+	$scope.putDTStart = function putRRule(newDTStart) {
+		$("#dtstartContent").val(newDTStart);
+	};
 });
 
 /*

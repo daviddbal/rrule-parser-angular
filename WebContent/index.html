@@ -28,9 +28,10 @@
 				<li>Type in a RRULE and DTSTART property manually.  While the controls only handle a subset of the <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> RRULE elements, you can use all RRULE elements by typing the property</li>
 					<ul>
 						<li>Examples:</li>
-						<li>RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13 for Friday the 13th</li>
-						<li>RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8 for U.S. Presidential Election Day</li>
-						<li>DTSTART;TZID=America/New_York:20190902T090000 for date/time with timezone</li>
+						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13')">RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13</a> for Friday the 13th</li>
+						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8')">RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8</a> for U.S. Presidential Election Day</li>
+						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2')">RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2</a> for the second-to-last weekday of the month</li>
+						<li><a href="" data-ng-click="putDTStart('DTSTART;TZID=America/New_York:20190902T090000')">DTSTART;TZID=America/New_York:20190902T090000</a>for date/time with timezone</li>
 					</ul>
 	        </ol>
 	    </p>
