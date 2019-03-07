@@ -190,13 +190,15 @@ rruleApp.controller('RRuleController', function($scope)
     {
 		let rruleText;
 		if (isFirstTime) {
-		 	rruleText =  $scope.makeRRule();
+			 rruleText =  $scope.makeRRule();
+			 dtstartText = $scope.makeDTStart();
 		 	isFirstTime = false;
 		 } else {
 			rruleText = $("#rruleContent").val();
+			dtstartText = $("#dtstartContent").val();
 		}
 		var queryObj ={ 'rrule' : rruleText,
-				   'dtstart' : $scope.makeDTStart(),
+				   'dtstart' : dtstartText,
 				   'maxRecurrences' : $scope.maxRecurrences
 		};
 		queryString = $.param(queryObj);
