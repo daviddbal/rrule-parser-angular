@@ -189,12 +189,12 @@ rruleApp.controller('RRuleController', function($scope)
     var getRecurrences = function()
     {
 		let rruleText;
-		// if (isFirstTime) {
-		// 	rruleText =  $scope.makeRRule();
-		// 	isFirstTime = false;
-		// } else {
-		rruleText = $("#rruleContent").val();
-//		}
+		if (isFirstTime) {
+		 	rruleText =  $scope.makeRRule();
+		 	isFirstTime = false;
+		 } else {
+			rruleText = $("#rruleContent").val();
+		}
 		console.log(rruleText);
 		var queryObj ={ 'rrule' : rruleText,
 				   'dtstart' : $scope.makeDTStart(),
