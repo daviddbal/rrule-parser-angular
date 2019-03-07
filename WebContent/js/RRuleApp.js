@@ -1,10 +1,5 @@
 var rruleApp = angular.module('rruleApp', ['ngRoute']);
-<<<<<<< HEAD
 var endpointURL = "https://pjfqxbg7ph.execute-api.us-west-2.amazonaws.com/default/rrule";
-=======
-//var servletURL = "http://sample-env-1.p7bebpmk9m.us-west-2.elasticbeanstalk.com/RRuleServlet";
-var servletURL = "RRuleServlet";
->>>>>>> master
 var ipAddress = null;
 
 rruleApp.controller('RRuleController', function($scope)
@@ -185,16 +180,25 @@ rruleApp.controller('RRuleController', function($scope)
         return dtstart;
     }
 	$scope.dtstart = $scope.makeDTStart();
-    
+	
+	var isFirstTime = true;
     /*
      * Get list of recurrences for the RRULE from endpoint and render in table
      */
     $scope.recurrences = [ 'No recurrences' ];
     var getRecurrences = function()
     {
-		var queryObj ={ rrule : $scope.makeRRule(),
-				   dtstart : $scope.makeDTStart(),
-				   maxRecurrences : $scope.maxRecurrences
+		let rruleText;
+		// if (isFirstTime) {
+		// 	rruleText =  $scope.makeRRule();
+		// 	isFirstTime = false;
+		// } else {
+		rruleText = $("#rruleContent").val();
+//		}
+		console.log(rruleText);
+		var queryObj ={ 'rrule' : rruleText,
+				   'dtstart' : $scope.makeDTStart(),
+				   'maxRecurrences' : $scope.maxRecurrences
 		};
 		queryString = $.param(queryObj);
     	$.ajax({
