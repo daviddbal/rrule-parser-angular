@@ -24,13 +24,12 @@
 	    <p>
 	        <ol>
 	            <li>Modify the controls found in the first box such as repeat frequency, start date, etc.  When they are changed the RRULE and DTSTART properties will automatically modified accordingly.</li>
-				<li>Type in a RRULE and DTSTART property manually.  While the controls only handle a subset of the <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> RRULE elements, you can use all RRULE elements by typing the property</li>
+				<li>Type in a RRULE and DTSTART property manually.  While the controls only handle a subset of the <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> RRULE elements, you can use all RRULE elements by typing the property.  Below are some interesting examples:</li>
 					<ul>
-						<li>Examples:</li>
-						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13')">RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13</a> for Friday the 13th</li>
-						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8')">RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8</a> for U.S. Presidential Election Day</li>
-						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2')">RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2</a> for the second-to-last weekday of the month</li>
-						<li><a href="" data-ng-click="putDTStart('DTSTART;TZID=America/New_York:20190902T090000')">DTSTART;TZID=America/New_York:20190902T090000</a>for date/time with timezone</li>
+						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13')">Friday the 13th</a></li>
+						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8')">U.S. Presidential Election Day</a></li>
+						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2')">Second-to-last weekday of the month</a></li>
+						<li><a href="" data-ng-click="putDTStart('DTSTART;TZID=America/New_York:20190902T090000')">With timezone</a></li>
 					</ul>
 	        </ol>
 	    </p>
@@ -58,11 +57,12 @@
 			Repeats every
 			<input 
 	            data-ng-model="interval" 
-	            type="number"
+				data-ng-change="handleDebouncedDataChange()"
+				type="number"
 	            id="interval" 
 	            min="1" 
 	            max="1000" 
-	            value="1"
+				value="1"
 	         >
 	         <span id='intervalType'></span><br>
 			
@@ -72,7 +72,7 @@
 					<input
 					    type="checkbox"
 					    name="dayOfWeekCheckBoxes"
-					    data-ng-checked="daysOfWeekSelection.indexOf(dayOfWeek) > -1"
+						data-ng-checked="daysOfWeekSelection.indexOf(dayOfWeek) > -1"
 					    data-ng-click="toggleDayOfWeekSelection(dayOfWeek)"
 					  >
 					  {{ dayOfWeek }}
@@ -86,7 +86,8 @@
 		            <input
 		                type="radio"
 		                name="monthlyRadioButtons"
-		                data-ng-model="$parent.monthlyOptionSelected"
+						data-ng-model="$parent.monthlyOptionSelected"
+						data-ng-click="handleDebouncedDataChange()"
 		                data-ng-value="monthlyOption"
 		              >
 		              {{ monthlyOption }}
@@ -94,8 +95,8 @@
 		        <br>
 	        </span>
 	
-			Start date<input type="date" data-ng-model="date" >
-			Start time<input type="time" data-ng-model="time" step="1">
+			Start date<input type="date" data-ng-model="date" data-ng-change="handleDebouncedDataChange()" >
+			Start time<input type="time" data-ng-model="time" step="1" data-ng-change="handleDebouncedDataChange()">
 			<br>
 	
 	        <!--End options (e.g. Never, After, On) -->		
@@ -104,7 +105,8 @@
 	            <input
 	                type="radio"
 	                name="endOptionRadioButtons"
-	                data-ng-model="$parent.endOptionSelected"
+					data-ng-model="$parent.endOptionSelected"
+					data-ng-click="handleDataChange()"
 	                data-ng-value="endOption"
 	              >
 	              {{ endOption }}
@@ -124,7 +126,7 @@
 	  		</span>
 	  		<span data-ng-show="isUntilShown()">
 	  			End date
-	  			<input type="date" data-ng-model="until">
+	  			<input type="date" data-ng-model="until" data-ng-change="handleDebouncedDataChange()">
 	  			<br>
 	  		</span>
 		</div>

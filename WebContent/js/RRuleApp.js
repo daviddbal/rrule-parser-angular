@@ -4,6 +4,7 @@ var ipAddress = null;
 
 rruleApp.controller('RRuleController', function($scope)
 {
+	var isFirstTime = true;
 	// NOW
 	var date = new Date();
 	date.setSeconds(0,0);
@@ -49,6 +50,7 @@ rruleApp.controller('RRuleController', function($scope)
 		{
 			$scope.daysOfWeekSelection.push(dayOfWeek);
 		}
+		debounceGetRecurrances();
 	}
 	$scope.isWeeklyOptionsShown = function()
 	{
@@ -72,7 +74,7 @@ rruleApp.controller('RRuleController', function($scope)
 	// COUNT
 	$scope.count = 10;
 	$scope.countLabel = "";
-	$scope.handleCountChange = function()
+	$scope.handleCountChange = function handleCountChange()
 	{
 		if ($scope.count > 1)
 		{
@@ -81,8 +83,8 @@ rruleApp.controller('RRuleController', function($scope)
 		{
 			$scope.countLabel = $scope.frequencySelected.unit;
 		}
+		debounceGetRecurrances();
 	}
-	$scope.handleCountChange();
 	$scope.isCountShown = function()
 	{
 		return $scope.endOptionSelected === endOptions.COUNT;
@@ -181,8 +183,7 @@ rruleApp.controller('RRuleController', function($scope)
     }
 	$scope.dtstart = $scope.makeDTStart();
 	
-	var isFirstTime = true;
-    /*
+	/*
      * Get list of recurrences for the RRULE from endpoint and render in table
      */
     $scope.recurrences = [ 'No recurrences' ];
@@ -214,7 +215,9 @@ rruleApp.controller('RRuleController', function($scope)
     		  },
     		success: renderList
     	});
-    }
+	}
+	
+	var debounceGetRecurrances = debounce(getRecurrences, 250);
     
     function loadXMLDoc()
     {
@@ -256,7 +259,8 @@ rruleApp.controller('RRuleController', function($scope)
     // Get initial set of recurrences after page is loaded
     $scope.$watch('$viewContentLoaded', function()
     		{
-    	getRecurrences();
+		getRecurrences();
+		isFirstTime = false;
      });
     
     $scope.isResultsOnSamePage = true;
@@ -276,13 +280,29 @@ rruleApp.controller('RRuleController', function($scope)
 
 	$scope.putRRule = function putRRule(newRRule) {
 		$("#rruleContent").val(newRRule);
-		getRecurrences();;
+		getRecurrences();
 	};
 
 	$scope.putDTStart = function putRRule(newDTStart) {
 		$("#dtstartContent").val(newDTStart);
 		getRecurrences();
 	};
+
+	// Debounced Data Change
+	$scope.handleDebouncedDataChange = function()
+	{
+		console.log("update recurrences");
+		debounceGetRecurrances();
+	}
+	$scope.handleDebouncedDataChange();
+
+	// Immediate Data Change
+	$scope.handleDataChange = function()
+	{
+		console.log("update recurrences");
+//		setTimeout(getRecurrences(), 10); // make sure data is refreshed
+	}
+	$scope.handleDataChange();
 });
 
 /*
@@ -344,3 +364,23 @@ function weekOrdinalInMonth(date)
     }
     return ordinalWeekNumber;
 }
+
+  // Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+  
