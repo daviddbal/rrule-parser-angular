@@ -191,61 +191,32 @@ rruleApp.controller('RRuleController', function($scope)
     {
 		let rruleText;
 		if (isFirstTime) {
-			 rruleText =  $scope.makeRRule();
-			 dtstartText = $scope.makeDTStart();
-		 	isFirstTime = false;
+			let firstTimeDates = makeFirstTimeDailyRecurrences(date, 50);
+			$scope.recurrences = firstTimeDates.split(",");
 		 } else {
 			rruleText = $("#rruleContent").val();
 			dtstartText = $("#dtstartContent").val();
+			var queryObj ={ 'rrule' : rruleText,
+					'dtstart' : dtstartText,
+					'maxRecurrences' : $scope.maxRecurrences
+			};
+			queryString = $.param(queryObj);
+			$.ajax({
+				type: 'GET',
+				contentType: 'application/x-www-form-urlencoded',
+				data: queryString,
+	//    		data: $("#rruleForm").serialize(),
+				url: endpointURL,
+				dataType: "text",
+				beforeSend: function(request) {
+	//    		    request.setRequestHeader("X-FORWARDED-FOR", ipAddress);
+				},
+				success: renderList
+			});
 		}
-		var queryObj ={ 'rrule' : rruleText,
-				   'dtstart' : dtstartText,
-				   'maxRecurrences' : $scope.maxRecurrences
-		};
-		queryString = $.param(queryObj);
-    	$.ajax({
-    		type: 'GET',
-    		contentType: 'application/x-www-form-urlencoded',
-    		data: queryString,
-//    		data: $("#rruleForm").serialize(),
-    		url: endpointURL,
-    		dataType: "text",
-    		beforeSend: function(request) {
-//    		    request.setRequestHeader("X-FORWARDED-FOR", ipAddress);
-    		  },
-    		success: renderList
-    	});
 	}
 	
 	var debounceGetRecurrances = debounce(getRecurrences, 250);
-    
-    function loadXMLDoc()
-    {
-    	var xmlhttp;
-    	if (window.XMLHttpRequest) {
-    		// code for IE7+, Firefox, Chrome, Opera, Safari
-    		xmlhttp = new XMLHttpRequest();
-    		} else {
-    			xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-    	}
-    	xmlhttp.onreadystatechange = function() {
-    		if (xmlhttp.readyState == 4) {
-    			if (xmlhttp.status = 200){
-    				document.getElementById("result").innerHTML = xmlhttp.responseText;
-    				} else
-    				{
-    					alert("Action can't be performed");
-    				}
-    			}
-    		};
-
-    	xmlhttp.open("POST", "RRuleServlet");
-    	xmlhttp.setRequestHeader('Content-type', "application/x-www-form-urlencoded");
-        var rruleContent = document.getElementById('rruleContent').value;
-        var dateTimeStart = document.getElementById('dateTimeStart').value
-        var limit = document.getElementById('limit').value
-    	xmlhttp.send("rruleContent=" + rruleContent + "&dateTimeStart=" + dateTimeStart + "&limit=" + limit);
-    }
     
     /*
      * Helper method to render comma-delimited list of date/times into table
@@ -257,11 +228,11 @@ rruleApp.controller('RRuleController', function($scope)
     }
     
     // Get initial set of recurrences after page is loaded
-    $scope.$watch('$viewContentLoaded', function()
-    		{
+	$scope.$watch('$viewContentLoaded', function()
+	{
 		getRecurrences();
 		isFirstTime = false;
-     });
+    });
     
     $scope.isResultsOnSamePage = true;
     $scope.processForm = function(event)
@@ -291,24 +262,42 @@ rruleApp.controller('RRuleController', function($scope)
 	// Debounced Data Change
 	$scope.handleDebouncedDataChange = function()
 	{
-		console.log("update recurrences");
-		debounceGetRecurrances();
+		if (!isFirstTime) {
+			console.log("update recurrences");
+			debounceGetRecurrances();
+		}
 	}
 	$scope.handleDebouncedDataChange();
 
 	// Immediate Data Change
 	$scope.handleDataChange = function()
 	{
-		console.log("update recurrences");
-//		setTimeout(getRecurrences(), 10); // make sure data is refreshed
+		if (!isFirstTime) {
+			console.log("update recurrences");
+			setTimeout(getRecurrences(), 10); // make sure data is refreshed
+		}
 	}
 	$scope.handleDataChange();
+
+	// to save a ajax call calculate the daily repeating starting list of recurrences
+	function makeFirstTimeDailyRecurrences(todayDate, recurrences) {
+		let dates = [];
+		for (var r=1; r<recurrences; r++) {
+			let date = todayDate.addDays(r-1);
+			var dateString = buildDateString(date, "-");
+			var timeString = buildTimeString(date, ":").substring(0,5);
+			dates.push(dateString + "T" + timeString); 
+		}
+		let dailyData = dates.reduce(function(pre, next) {
+			return pre + ',' + next;
+		});
+		return dailyData;;
+	}
 });
 
 /*
  * Date/time helper functions
  */
-
 function makeDateTime(dateString, timeString)
 {
 	if (timeString === "")
@@ -383,4 +372,10 @@ function debounce(func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 };
+
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
   

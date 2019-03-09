@@ -16,14 +16,13 @@
 <body data-ng-controller="RRuleController" >
     <h1>RRULE Parser/Recurrence Calculator</h1>
     <div id="builder">
-	    <h4>Introduction</h4>
 	    <p>The iCalendar RRULE (recurrence rule) parser and recurrence calculator is based on <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> .
 	    It generates a list of date or date/time values defined by RRULE and DTSTART values.  It uses iCalendar-lib, an iCalendar Java library from <a href="https://github.com/daviddbal/icalendar-lib">github</a>.
 	    </p>
 	    <h4>Usage</h4>
 	    <p>
 	        <ol>
-	            <li>Modify the controls found in the first box such as repeat frequency, start date, etc.  When they are changed the RRULE and DTSTART properties will automatically modified accordingly.</li>
+	            <li>Modify the controls found in the first box such as repeat frequency, start date, etc.</li>
 				<li>Type in a RRULE and DTSTART property manually.  While the controls only handle a subset of the <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a> RRULE elements, you can use all RRULE elements by typing the property.  Below are some interesting examples:</li>
 					<ul>
 						<li><a href="" data-ng-click="putRRule('RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13')">Friday the 13th</a></li>
